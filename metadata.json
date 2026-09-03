@@ -1,0 +1,6 @@
+{
+  "name": "AquaTools",
+  "description": "Privacy-first, no-login browser utilities for file conversion, document management, text formatting, and developer generation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
