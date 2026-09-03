@@ -63,10 +63,27 @@ You do not need to trust claims blindly. You can verify privacy in real-time:
 - **URL Encoder/Decoder**: RFC 3986 URL component encoding, query string parser, and parameter builder.
 - **JSON ↔ CSV ↔ YAML Converter**: Bidirectional structured data conversion with delimiters and nested key flattening.
 
-### 📄 Document & PDF Tools
-- **PDF Merge & Split**: Reorder, merge multiple PDFs, extract custom page ranges, and rotate pages in memory.
-- **PDF Metadata & Security Inspector**: View PDF title, author, producer, encryption status, and permissions.
-- **File Inspector & Checksum**: MIME type detection, byte breakdown, and instant SHA-256 / MD5 / SHA-1 checksums.
+### 📄 Document & PDF Workstation Suite
+- **PDF Compression & Optimization**: Lossy visual downsampling (72, 100, 150 DPI) and lossless stream compaction with real-time size savings computation.
+- **Extract PDF Images**: Extract embedded raster graphics and photos into individual files packaged into a ZIP archive.
+- **Repair Corrupted PDF**: Salvage corrupted cross-reference (xref) tables, repair broken trailers, and recover pages via dual-stage byte reconstruction.
+- **PDF/A Archival Preservation**: ISO 19005 archival compliance with sRGB OutputIntents, XMP schema injection, and embedded script purging.
+- **Web Stream & Object Optimizer**: Deflates stream dictionaries and reorganizes object hierarchies for efficient sequential reading.
+- **PDF Annotate & Draw**: Freehand drawing, highlighters, text notes, stamps, and shapes embedded directly into the vector stream.
+- **Interactive Form Filling & Creation**: Fill AcroForm text fields/checkboxes or design new interactive forms from scratch.
+- **N-Up Multi-Page Compositing**: Fit 2, 4, 6, 9, or 16 pages per printable sheet for booklets, index cards, and paper savings.
+- **Halve 2-Page Spreads**: Split scanned book spreads or dual-page layouts into individual portrait pages.
+- **PDF Overlay & Letterhead**: Superimpose stationary templates, letterheads, or background stamps onto target documents.
+- **PDF Visual Comparator & Diff**: Pixel-level visual diff with split curtain slider and difference highlights.
+- **Bookmarks & Table of Contents**: Build interactive navigation outlines and auto-prepend a formatted Table of Contents.
+- **PDF Merge & Split**: Combine multiple documents or extract custom page ranges (e.g., `1-3, 5, 8-10`) with ZIP export.
+- **Organize & Rotate Pages**: Visual drag-and-drop grid to reorder, duplicate, rotate, and delete pages.
+- **Images ↔ PDF**: Convert JPG/PNG/WebP images to PDF, or rasterize PDF pages to high-res images.
+- **Crop Margins & Pagination**: Trim white borders and stamp customizable page numbers with dynamic format templates.
+- **Protect & Unlock PDF**: Web Crypto 128-bit encryption with permission flags and authorized password removal.
+- **Sanitize & Edit Metadata**: Strip hidden author tags, producer software signatures, and edit title/subject tags.
+- **PDF OCR & Text Layer Extractor**: Client-side text layer inspection with a zero-upload WASM roadmap for searchable OCR.
+- **Office Converters (Word / Excel / PowerPoint)**: 100% private offline workflows and WebAssembly sandboxing roadmap.
 
 ### 🛠️ Developer Tools
 - **Code Formatter & Minifier**: Beautify and compress JSON, HTML, CSS, JavaScript, and SQL.

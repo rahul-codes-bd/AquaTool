@@ -34,6 +34,21 @@ import { PdfWatermarkTool } from '../tools/PdfWatermarkTool';
 import { PdfPageNumbersTool } from '../tools/PdfPageNumbersTool';
 import { PdfFlattenTool } from '../tools/PdfFlattenTool';
 import { PasswordGeneratorTool } from '../tools/PasswordGeneratorTool';
+import { PdfProtectTool } from '../tools/PdfProtectTool';
+import { PdfUnlockTool } from '../tools/PdfUnlockTool';
+import { PdfAnnotateTool } from '../tools/PdfAnnotateTool';
+import { PdfFormsTool } from '../tools/PdfFormsTool';
+import { PdfNUpTool } from '../tools/PdfNUpTool';
+import { PdfOverlayTool } from '../tools/PdfOverlayTool';
+import { PdfCompareTool } from '../tools/PdfCompareTool';
+import { PdfBookmarksTool } from '../tools/PdfBookmarksTool';
+import { PdfCompressTool } from '../tools/PdfCompressTool';
+import { PdfExtractImagesTool } from '../tools/PdfExtractImagesTool';
+import { PdfRepairTool } from '../tools/PdfRepairTool';
+import { PdfArchivalTool } from '../tools/PdfArchivalTool';
+import { PdfWebOptimizeTool } from '../tools/PdfWebOptimizeTool';
+import { PdfOcrTool } from '../tools/PdfOcrTool';
+import { OfficeConvertNoticeTool } from '../tools/OfficeConvertNoticeTool';
 
 interface PdfToolRunnerPageProps {
   tool: PdfToolDefinition;
@@ -135,7 +150,92 @@ export const PdfToolRunnerPage: React.FC<PdfToolRunnerPageProps> = ({
       return <PdfFlattenTool />;
     }
 
-    // 11. Secure Password Generation
+    // 11. Protect PDF & Unlock PDF
+    if (tool.slug === 'protect-pdf' || tool.slug === 'encrypt-pdf' || tool.slug === 'pdf-protect') {
+      return <PdfProtectTool />;
+    }
+    if (tool.slug === 'unlock-pdf' || tool.slug === 'decrypt-pdf' || tool.slug === 'pdf-unlock') {
+      return <PdfUnlockTool />;
+    }
+
+    // 12. Annotate & Draw
+    if (tool.slug === 'annotate-pdf' || tool.slug === 'draw-pdf' || tool.slug === 'pdf-annotate') {
+      return <PdfAnnotateTool />;
+    }
+
+    // 13. Fill Forms & Form Builder
+    if (tool.slug === 'fill-pdf-forms' || tool.slug === 'fill-form' || tool.slug === 'pdf-form-filler') {
+      return <PdfFormsTool initialMode="fill" />;
+    }
+    if (tool.slug === 'create-pdf-forms' || tool.slug === 'create-form' || tool.slug === 'form-builder') {
+      return <PdfFormsTool initialMode="create" />;
+    }
+
+    // 14. N-Up & Halve Pages
+    if (tool.slug === 'nup-pdf' || tool.slug === 'pages-per-sheet' || tool.slug === 'pdf-nup') {
+      return <PdfNUpTool initialMode="nup" />;
+    }
+    if (tool.slug === 'halve-pdf' || tool.slug === 'split-spreads' || tool.slug === 'halve-pages') {
+      return <PdfNUpTool initialMode="halve" />;
+    }
+
+    // 15. Overlay & Letterhead
+    if (tool.slug === 'overlay-pdf' || tool.slug === 'letterhead-pdf' || tool.slug === 'pdf-overlay') {
+      return <PdfOverlayTool />;
+    }
+
+    // 16. Compare PDF
+    if (tool.slug === 'compare-pdf' || tool.slug === 'pdf-compare' || tool.slug === 'pdf-diff') {
+      return <PdfCompareTool />;
+    }
+
+    // 17. Bookmarks & TOC
+    if (tool.slug === 'bookmarks-pdf' || tool.slug === 'pdf-bookmarks' || tool.slug === 'toc-pdf' || tool.slug === 'table-of-contents') {
+      return <PdfBookmarksTool />;
+    }
+
+    // 18. Compress PDF
+    if (tool.slug === 'compress-pdf' || tool.slug === 'pdf-compress' || tool.slug === 'shrink-pdf') {
+      return <PdfCompressTool />;
+    }
+
+    // 19. Extract Images
+    if (tool.slug === 'extract-pdf-images' || tool.slug === 'pdf-extract-images' || tool.slug === 'extract-images-from-pdf') {
+      return <PdfExtractImagesTool />;
+    }
+
+    // 20. Repair PDF
+    if (tool.slug === 'repair-pdf' || tool.slug === 'pdf-repair' || tool.slug === 'fix-pdf') {
+      return <PdfRepairTool />;
+    }
+
+    // 21. PDF/A Archival
+    if (tool.slug === 'pdf-a' || tool.slug === 'pdf-archival' || tool.slug === 'pdfa-converter') {
+      return <PdfArchivalTool />;
+    }
+
+    // 22. Web Stream Optimize
+    if (tool.slug === 'web-optimize-pdf' || tool.slug === 'optimize-pdf' || tool.slug === 'fast-web-view') {
+      return <PdfWebOptimizeTool />;
+    }
+
+    // 23. OCR PDF
+    if (tool.slug === 'ocr-pdf' || tool.slug === 'pdf-ocr' || tool.slug === 'searchable-pdf') {
+      return <PdfOcrTool />;
+    }
+
+    // 24. Office to PDF Notices
+    if (tool.slug === 'word-to-pdf' || tool.slug === 'docx-to-pdf') {
+      return <OfficeConvertNoticeTool format="word" />;
+    }
+    if (tool.slug === 'excel-to-pdf' || tool.slug === 'xlsx-to-pdf') {
+      return <OfficeConvertNoticeTool format="excel" />;
+    }
+    if (tool.slug === 'powerpoint-to-pdf' || tool.slug === 'pptx-to-pdf') {
+      return <OfficeConvertNoticeTool format="powerpoint" />;
+    }
+
+    // 25. Secure Password Generation
     if (
       tool.slug === 'generate-password' ||
       tool.slug === 'password-generator' ||

@@ -31,6 +31,14 @@ import { PdfNUpTool } from '../tools/PdfNUpTool';
 import { PdfOverlayTool } from '../tools/PdfOverlayTool';
 import { PdfCompareTool } from '../tools/PdfCompareTool';
 import { PdfBookmarksTool } from '../tools/PdfBookmarksTool';
+import { PdfCompressTool } from '../tools/PdfCompressTool';
+import { PdfExtractImagesTool } from '../tools/PdfExtractImagesTool';
+import { PdfRepairTool } from '../tools/PdfRepairTool';
+import { PdfArchivalTool } from '../tools/PdfArchivalTool';
+import { PdfWebOptimizeTool } from '../tools/PdfWebOptimizeTool';
+import { PdfOcrTool } from '../tools/PdfOcrTool';
+import { OfficeConvertNoticeTool } from '../tools/OfficeConvertNoticeTool';
+import { ComingSoonTool } from '../tools/ComingSoonTool';
 import { JsonCsvConverterTool } from '../tools/JsonCsvConverterTool';
 import { CodeFormatterTool } from '../tools/CodeFormatterTool';
 import { MarkdownPreviewTool } from '../tools/MarkdownPreviewTool';
@@ -171,6 +179,39 @@ export const ToolRunnerPage: React.FC<ToolRunnerPageProps> = ({
       case 'toc-pdf':
       case 'table-of-contents':
         return <PdfBookmarksTool />;
+      case 'compress-pdf':
+      case 'pdf-compress':
+      case 'shrink-pdf':
+        return <PdfCompressTool />;
+      case 'extract-pdf-images':
+      case 'pdf-extract-images':
+      case 'extract-images-from-pdf':
+        return <PdfExtractImagesTool />;
+      case 'repair-pdf':
+      case 'pdf-repair':
+      case 'fix-pdf':
+        return <PdfRepairTool />;
+      case 'pdf-a':
+      case 'pdf-archival':
+      case 'pdfa-converter':
+        return <PdfArchivalTool />;
+      case 'web-optimize-pdf':
+      case 'optimize-pdf':
+      case 'fast-web-view':
+        return <PdfWebOptimizeTool />;
+      case 'ocr-pdf':
+      case 'pdf-ocr':
+      case 'searchable-pdf':
+        return <PdfOcrTool />;
+      case 'word-to-pdf':
+      case 'docx-to-pdf':
+        return <OfficeConvertNoticeTool format="word" />;
+      case 'excel-to-pdf':
+      case 'xlsx-to-pdf':
+        return <OfficeConvertNoticeTool format="excel" />;
+      case 'powerpoint-to-pdf':
+      case 'pptx-to-pdf':
+        return <OfficeConvertNoticeTool format="powerpoint" />;
       case 'generate-password':
       case 'password-generator':
       case 'passphrase-generator':

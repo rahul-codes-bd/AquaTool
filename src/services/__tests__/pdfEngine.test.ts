@@ -214,4 +214,123 @@ describe('PdfEngine (Phase A Architecture & Engine)', () => {
       expect(() => PdfEngine.cleanupAllTrackedUrls()).not.toThrow();
     });
   });
+
+  describe('9. Compression & Stream Optimization', () => {
+    it('executes lossless compaction on a PDF document', async () => {
+      const file = await createSamplePdf(3, 'Compression Target');
+      const result = await PdfEngine.compressPdf(file, {
+        mode: 'lossless-structural',
+        targetDpi: 150,
+        imageQuality: 0.8,
+        grayscale: false,
+        stripMetadata: true,
+        cleanUnusedObjects: true,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.pageCount).toBe(3);
+      expect(result.blob).toBeInstanceOf(Blob);
+      expect(result.savingsPct).toBeDefined();
+      expect(result.compressedSize).toBeDefined();
+    });
+
+    it('web-optimizes a PDF object hierarchy', async () => {
+      const file = await createSamplePdf(2, 'Web Optimize Target');
+      const result = await PdfEngine.optimizeWebStreams(file, {
+        cleanObjectStreams: true,
+        deflateStreams: true,
+        removeUnusedResources: true,
+        sortPageTree: true,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.pageCount).toBe(2);
+      expect(result.blob).toBeInstanceOf(Blob);
+    });
+  });
+
+  describe('10. PDF/A Archival Preservation', () => {
+    it('standardizes a document with XMP metadata and sRGB OutputIntent', async () => {
+      const file = await createSamplePdf(2, 'Archival Doc');
+      const result = await PdfEngine.prepareArchivalPdf(file, {
+        standard: 'PDF/A-1b',
+        colorProfile: 'sRGB',
+        stripJavaScript: true,
+        stripMultimedia: true,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.pageCount).toBe(2);
+      expect(result.blob).toBeInstanceOf(Blob);
+
+      const inspection = await PdfEngine.inspectPdf(result.blob!);
+      expect(inspection.pageCount).toBe(2);
+    });
+  });
+
+  describe('11. N-Up & Spread Halving', () => {
+    it('composites 2 pages per sheet (2-Up)', async () => {
+      const file = await createSamplePdf(4, 'N-Up Target');
+      const result = await PdfEngine.pagesPerSheet(file, {
+        count: 2,
+        orientation: 'landscape',
+        pageSize: 'a4',
+        addBorder: true,
+        marginPt: 15,
+        spacingPt: 10,
+        pageOrder: 'ltr',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.pageCount).toBe(2); // 4 pages packed 2-up -> 2 output pages
+      expect(result.blob).toBeInstanceOf(Blob);
+    });
+
+    it('halves 2-page horizontal spreads into separate single pages', async () => {
+      // Create a 2-page wide spread (e.g. 1190 x 841 pt)
+      const doc = await PDFDocument.create();
+      const page = doc.addPage([1190.55, 841.89]);
+      page.drawText('Left Spread', { x: 100, y: 400, size: 20 });
+      page.drawText('Right Spread', { x: 700, y: 400, size: 20 });
+      const bytes = await doc.save();
+      const spreadFile = new File([bytes], 'spread.pdf', { type: 'application/pdf' });
+
+      const result = await PdfEngine.halvePages(spreadFile, {
+        direction: 'vertical',
+        pageRange: 'all',
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.pageCount).toBe(2); // 1 wide page split in half -> 2 portrait pages
+    });
+  });
+
+  describe('12. Corrupted PDF Diagnostics & Salvage', () => {
+    it('repairs valid and slightly damaged PDF structures', async () => {
+      const file = await createSamplePdf(2, 'Repair Candidate');
+      const result = await PdfEngine.repairPdf(file);
+
+      expect(result.success).toBe(true);
+      expect(result.pageCount).toBe(2);
+      expect(result.diagnostic.recoveredPages).toBe(2);
+      expect(result.diagnostic.repairsApplied.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('13. Bookmarks & Table of Contents', () => {
+    it('embeds outline bookmarks and prepends TOC page', async () => {
+      const file = await createSamplePdf(3, 'TOC Document');
+      const result = await PdfEngine.generateTocPdf(
+        file,
+        [
+          { id: '1', title: 'Chapter 1: Intro', pageNumber: 1, level: 0 },
+          { id: '2', title: 'Chapter 2: Architecture', pageNumber: 2, level: 0 },
+          { id: '3', title: 'Section 2.1: Details', pageNumber: 3, level: 1 },
+        ]
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.pageCount).toBe(4); // 3 original + 1 prepended TOC page
+    });
+  });
 });

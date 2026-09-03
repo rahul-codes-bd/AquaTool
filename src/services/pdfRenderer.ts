@@ -41,7 +41,9 @@ export class PdfRenderer {
       cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@' + (pdfjsLib.version || '4.10.38') + '/cmaps/',
       cMapPacked: true,
       standardFontDataUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@' + (pdfjsLib.version || '4.10.38') + '/standard_fonts/',
-    });
+      enableScripting: false,
+      isEvalSupported: false,
+    } as any);
 
     return await loadingTask.promise;
   }

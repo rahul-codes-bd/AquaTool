@@ -250,7 +250,9 @@ export class PdfCrypt {
     try {
       const loadingTask = pdfjsLib.getDocument({
         data: new Uint8Array(buffer),
-      });
+        enableScripting: false,
+        isEvalSupported: false,
+      } as any);
       await loadingTask.promise;
       return false;
     } catch (err: any) {
@@ -297,7 +299,9 @@ export class PdfCrypt {
       const loadingTask = pdfjsLib.getDocument({
         data: uint8,
         password: password,
-      });
+        enableScripting: false,
+        isEvalSupported: false,
+      } as any);
       pdfJsDoc = await loadingTask.promise;
     } catch (err: any) {
       const msg = (err?.message || '').toLowerCase();

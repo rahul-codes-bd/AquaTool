@@ -241,3 +241,53 @@ export interface PdfOverlayConfig {
   targetPages: string;
 }
 
+export interface PdfCompressConfig {
+  mode: 'recommended' | 'extreme' | 'low' | 'lossless-structural' | 'custom';
+  targetDpi: number; // e.g. 72, 120, 150, 200
+  imageQuality: number; // 0.1 to 1.0
+  grayscale: boolean;
+  stripMetadata: boolean;
+  cleanUnusedObjects: boolean;
+}
+
+export interface PdfExtractedImage {
+  id: string;
+  pageIndex: number;
+  pageNumber: number;
+  width: number;
+  height: number;
+  format: 'png' | 'jpeg' | 'webp';
+  blob: Blob;
+  dataUrl: string;
+  sizeBytes: number;
+  name: string;
+}
+
+export interface PdfRepairDiagnostic {
+  isRecoverable: boolean;
+  healthStatus: 'HEALTHY' | 'REPAIRED' | 'DEGRADED' | 'UNRECOVERABLE';
+  recoveredPages: number;
+  totalPagesEstimated: number;
+  issuesDetected: string[];
+  repairsApplied: string[];
+  binaryHeaderFound: boolean;
+  trailerRepaired: boolean;
+  xrefRebuilt: boolean;
+}
+
+export interface PdfArchivalConfig {
+  standard: 'PDF/A-1b' | 'PDF/A-2b' | 'PDF/A-3b';
+  colorProfile: 'sRGB' | 'CMYK';
+  title?: string;
+  creator?: string;
+  stripJavaScript: boolean;
+  stripMultimedia: boolean;
+}
+
+export interface PdfWebOptimizeConfig {
+  cleanObjectStreams: boolean;
+  deflateStreams: boolean;
+  removeUnusedResources: boolean;
+  sortPageTree: boolean;
+}
+
