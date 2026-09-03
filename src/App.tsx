@@ -21,6 +21,7 @@ import { t } from './i18n';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<string>('home');
+  const [activeCategory, setActiveCategory] = useState<ToolCategory | 'all'>('all');
   const [activeToolSlug, setActiveToolSlug] = useState<string | null>(null);
   const [attemptedRoute, setAttemptedRoute] = useState<string>('');
   const [favorites, setFavorites] = useState<string[]>(() => StorageService.getFavorites());
@@ -62,6 +63,7 @@ export default function App() {
 
       if (!hash) {
         setCurrentView('home');
+        setActiveCategory('all');
         setActiveToolSlug(null);
         setAttemptedRoute('');
       } else if (hash.startsWith('tool/')) {
@@ -79,8 +81,22 @@ export default function App() {
           setActiveToolSlug(null);
           setAttemptedRoute(rawHash);
         }
+      } else if (hash.startsWith('category/')) {
+        const cat = hash.replace('category/', '') as ToolCategory;
+        const validCategories: ToolCategory[] = ['converters', 'documents', 'developer', 'generators', 'utilities'];
+        if (validCategories.includes(cat)) {
+          setCurrentView('home');
+          setActiveCategory(cat);
+          setActiveToolSlug(null);
+          setAttemptedRoute('');
+        } else {
+          setCurrentView('404');
+          setActiveToolSlug(null);
+          setAttemptedRoute(rawHash);
+        }
       } else if (['privacy', 'security', 'about', 'contact', 'settings', 'terms', 'favorites', 'all-tools'].includes(hash)) {
         setCurrentView(hash);
+        setActiveCategory('all');
         setActiveToolSlug(null);
         setAttemptedRoute('');
       } else {
@@ -112,6 +128,10 @@ export default function App() {
   const handleNavigate = (view: string, category?: ToolCategory, toolSlug?: string) => {
     if (view === 'tool' && toolSlug) {
       window.location.hash = `tool/${toolSlug}`;
+    } else if (view === 'category' && category) {
+      window.location.hash = `category/${category}`;
+    } else if (view === 'all-tools' && category) {
+      window.location.hash = `category/${category}`;
     } else if (view === 'home') {
       window.location.hash = '';
     } else {
@@ -191,6 +211,7 @@ export default function App() {
         {(currentView === 'home' || currentView === 'all-tools' || currentView === 'favorites') && (
           <HomePage
             currentView={currentView}
+            activeCategory={activeCategory}
             onSelectTool={handleSelectTool}
             favorites={favorites}
             recentTools={recentTools}

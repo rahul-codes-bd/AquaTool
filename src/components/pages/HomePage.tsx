@@ -26,6 +26,7 @@ import { DynamicIcon } from '../common/DynamicIcon';
 
 interface HomePageProps {
   currentView?: string;
+  activeCategory?: ToolCategory | 'all';
   onSelectTool: (slug: string) => void;
   favorites: string[];
   recentTools: string[];
@@ -48,6 +49,7 @@ const QUICK_SEARCH_TAGS = [
 
 export const HomePage: React.FC<HomePageProps> = ({
   currentView = 'home',
+  activeCategory = 'all',
   onSelectTool,
   favorites,
   recentTools,
@@ -57,7 +59,12 @@ export const HomePage: React.FC<HomePageProps> = ({
   onNavigate,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<ToolCategory | 'all'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<ToolCategory | 'all'>(activeCategory);
+
+  // Sync selectedCategory whenever activeCategory prop changes
+  useEffect(() => {
+    setSelectedCategory(activeCategory);
+  }, [activeCategory]);
 
   // If user navigates specifically to 'favorites' or 'all-tools', adjust state accordingly
   useEffect(() => {
