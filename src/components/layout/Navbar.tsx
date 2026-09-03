@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Droplet, Star, Moon, Sun, Shield, Menu, X, Grid, Settings, HelpCircle, Lock } from 'lucide-react';
+import { Droplet, Star, Moon, Sun, Shield, Menu, X, Grid, Settings, HelpCircle, Lock, FileText } from 'lucide-react';
 import { APP_CONFIG } from '../../config/appConfig';
 import { PrivacyBadge } from '../common/PrivacyBadge';
 import { ToolCategory } from '../../types';
@@ -93,6 +93,22 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <Grid className="w-3.5 h-3.5" />
             <span>All Tools</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleNavClick('pdf')}
+            className={`px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
+              currentView === 'pdf' || currentView === 'pdf-hub' || currentView === 'pdf-tool'
+                ? 'bg-cyan-500/20 text-cyan-300 font-semibold border border-cyan-400/40 shadow-[0_0_14px_rgba(6,182,212,0.25)]'
+                : 'text-slate-400 hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5 text-cyan-400" />
+            <span>PDF Suite</span>
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 font-bold">
+              80+
+            </span>
           </button>
 
           <button
@@ -207,6 +223,24 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="flex items-center gap-2">
                 <Grid className="w-4 h-4 text-cyan-400" />
                 <span>All Utilities</span>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleNavClick('pdf')}
+              className={`w-full text-left min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-between ${
+                currentView === 'pdf' || currentView === 'pdf-hub' || currentView === 'pdf-tool'
+                  ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30'
+                  : 'text-slate-200 hover:bg-white/5 active:bg-white/10'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-cyan-400" />
+                <span>PDF Suite</span>
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-xs bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold font-mono">
+                80+ Tools
               </span>
             </button>
 

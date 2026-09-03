@@ -15,6 +15,22 @@ import { ImageColorPickerTool } from '../tools/ImageColorPickerTool';
 import { FaviconGeneratorTool } from '../tools/FaviconGeneratorTool';
 import { PdfMetadataTool } from '../tools/PdfMetadataTool';
 import { PdfMergeSplitTool } from '../tools/PdfMergeSplitTool';
+import { PdfViewerTool } from '../tools/PdfViewerTool';
+import { PdfPageOrganizerTool } from '../tools/PdfPageOrganizerTool';
+import { ImagesToPdfTool } from '../tools/ImagesToPdfTool';
+import { PdfToImagesTool } from '../tools/PdfToImagesTool';
+import { PdfCropTool } from '../tools/PdfCropTool';
+import { PdfWatermarkTool } from '../tools/PdfWatermarkTool';
+import { PdfPageNumbersTool } from '../tools/PdfPageNumbersTool';
+import { PdfFlattenTool } from '../tools/PdfFlattenTool';
+import { PdfProtectTool } from '../tools/PdfProtectTool';
+import { PdfUnlockTool } from '../tools/PdfUnlockTool';
+import { PdfAnnotateTool } from '../tools/PdfAnnotateTool';
+import { PdfFormsTool } from '../tools/PdfFormsTool';
+import { PdfNUpTool } from '../tools/PdfNUpTool';
+import { PdfOverlayTool } from '../tools/PdfOverlayTool';
+import { PdfCompareTool } from '../tools/PdfCompareTool';
+import { PdfBookmarksTool } from '../tools/PdfBookmarksTool';
 import { JsonCsvConverterTool } from '../tools/JsonCsvConverterTool';
 import { CodeFormatterTool } from '../tools/CodeFormatterTool';
 import { MarkdownPreviewTool } from '../tools/MarkdownPreviewTool';
@@ -69,11 +85,97 @@ export const ToolRunnerPage: React.FC<ToolRunnerPageProps> = ({
         return <ImageColorPickerTool />;
       case 'favicon-generator':
         return <FaviconGeneratorTool />;
-      case 'pdf-metadata':
-        return <PdfMetadataTool />;
+      case 'view-pdf':
+      case 'pdf-viewer':
+        return <PdfViewerTool />;
+      case 'merge-pdf':
+      case 'split-pdf':
       case 'pdf-merge':
       case 'pdf-split':
+      case 'pdf-merge-split':
         return <PdfMergeSplitTool />;
+      case 'organize-pdf-pages':
+      case 'rearrange-pdf-pages':
+        return <PdfPageOrganizerTool initialMode="rearrange" />;
+      case 'rotate-pdf-pages':
+      case 'rotate-pdf':
+        return <PdfPageOrganizerTool initialMode="rotate" />;
+      case 'remove-pdf-pages':
+      case 'delete-pdf-pages':
+        return <PdfPageOrganizerTool initialMode="remove" />;
+      case 'extract-pdf-pages':
+        return <PdfPageOrganizerTool initialMode="extract" />;
+      case 'images-to-pdf':
+      case 'jpg-to-pdf':
+      case 'png-to-pdf':
+        return <ImagesToPdfTool />;
+      case 'pdf-to-images':
+      case 'pdf-to-jpg':
+      case 'pdf-to-png':
+        return <PdfToImagesTool defaultFormat={tool.slug === 'pdf-to-png' ? 'png' : 'jpeg'} />;
+      case 'crop-pdf':
+        return <PdfCropTool />;
+      case 'add-watermark':
+      case 'watermark-pdf':
+        return <PdfWatermarkTool />;
+      case 'add-page-numbers':
+      case 'page-numbers-pdf':
+        return <PdfPageNumbersTool />;
+      case 'flatten-pdf':
+        return <PdfFlattenTool />;
+      case 'protect-pdf':
+      case 'pdf-protect':
+      case 'encrypt-pdf':
+        return <PdfProtectTool />;
+      case 'unlock-pdf':
+      case 'pdf-unlock':
+      case 'decrypt-pdf':
+        return <PdfUnlockTool />;
+      case 'pdf-metadata':
+      case 'edit-pdf-document-info':
+      case 'edit-pdf-metadata':
+        return <PdfMetadataTool initialTab="inspect" />;
+      case 'remove-pdf-metadata':
+      case 'sanitize-pdf':
+        return <PdfMetadataTool initialTab="remove" />;
+      case 'annotate-pdf':
+      case 'pdf-annotate':
+      case 'draw-pdf':
+        return <PdfAnnotateTool />;
+      case 'fill-pdf-forms':
+      case 'fill-form':
+      case 'pdf-form-filler':
+        return <PdfFormsTool initialMode="fill" />;
+      case 'create-pdf-forms':
+      case 'create-form':
+      case 'form-builder':
+        return <PdfFormsTool initialMode="create" />;
+      case 'nup-pdf':
+      case 'pages-per-sheet':
+      case 'pdf-nup':
+        return <PdfNUpTool initialMode="nup" />;
+      case 'halve-pdf':
+      case 'split-spreads':
+      case 'halve-pages':
+        return <PdfNUpTool initialMode="halve" />;
+      case 'overlay-pdf':
+      case 'pdf-overlay':
+      case 'letterhead-pdf':
+        return <PdfOverlayTool />;
+      case 'compare-pdf':
+      case 'pdf-compare':
+      case 'pdf-diff':
+        return <PdfCompareTool />;
+      case 'bookmarks-pdf':
+      case 'pdf-bookmarks':
+      case 'toc-pdf':
+      case 'table-of-contents':
+        return <PdfBookmarksTool />;
+      case 'generate-password':
+      case 'password-generator':
+      case 'passphrase-generator':
+      case 'pin-generator':
+        return <PasswordGeneratorTool />;
       case 'json-csv-converter':
         return <JsonCsvConverterTool />;
       case 'code-formatter':
@@ -89,10 +191,6 @@ export const ToolRunnerPage: React.FC<ToolRunnerPageProps> = ({
         return <TextUtilitiesTool />;
       case 'uuid-generator':
         return <UuidGeneratorTool />;
-      case 'password-generator':
-      case 'passphrase-generator':
-      case 'pin-generator':
-        return <PasswordGeneratorTool />;
       case 'hash-generator':
         return <HashGeneratorTool />;
       case 'jwt-decoder':

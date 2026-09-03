@@ -4,6 +4,8 @@ import { Footer } from './components/layout/Footer';
 import { WaterBackground } from './components/layout/WaterBackground';
 import { HomePage } from './components/pages/HomePage';
 import { ToolRunnerPage } from './components/pages/ToolRunnerPage';
+import { PdfHubPage } from './components/pages/PdfHubPage';
+import { PdfToolRunnerPage } from './components/pages/PdfToolRunnerPage';
 import { PrivacyPage } from './components/pages/PrivacyPage';
 import { SecurityPage } from './components/pages/SecurityPage';
 import { AboutPage } from './components/pages/AboutPage';
@@ -15,14 +17,18 @@ import { ToastContainer } from './components/common/Toast';
 import { AdSlotPlaceholder } from './components/common/AdSlotPlaceholder';
 import { StorageService } from './services/storage';
 import { ALL_TOOLS, getToolBySlug } from './registry/toolsRegistry';
+import { PDF_CATEGORIES, getPdfToolBySlug } from './registry/pdfRegistry';
 import { ToolCategory, ToastMessage } from './types';
+import { PdfToolCategory } from './types/pdf';
 import { APP_CONFIG } from './config/appConfig';
 import { t } from './i18n';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<string>('home');
   const [activeCategory, setActiveCategory] = useState<ToolCategory | 'all'>('all');
+  const [activePdfCategory, setActivePdfCategory] = useState<PdfToolCategory | 'all'>('all');
   const [activeToolSlug, setActiveToolSlug] = useState<string | null>(null);
+  const [activePdfToolSlug, setActivePdfToolSlug] = useState<string | null>(null);
   const [attemptedRoute, setAttemptedRoute] = useState<string>('');
   const [favorites, setFavorites] = useState<string[]>(() => StorageService.getFavorites());
   const [recentTools, setRecentTools] = useState<string[]>(() => StorageService.getRecentTools());
@@ -65,7 +71,43 @@ export default function App() {
         setCurrentView('home');
         setActiveCategory('all');
         setActiveToolSlug(null);
+        setActivePdfToolSlug(null);
         setAttemptedRoute('');
+      } else if (hash === 'pdf' || hash === 'pdf-hub') {
+        setCurrentView('pdf-hub');
+        setActivePdfCategory('all');
+        setActiveToolSlug(null);
+        setActivePdfToolSlug(null);
+        setAttemptedRoute('');
+      } else if (hash.startsWith('pdf-category/') || hash.startsWith('pdf/')) {
+        const catSlug = hash.replace(/^(pdf-category\/|pdf\/)/, '') as PdfToolCategory;
+        const validPdfCat = PDF_CATEGORIES.some((c) => c.id === catSlug);
+        if (validPdfCat) {
+          setCurrentView('pdf-hub');
+          setActivePdfCategory(catSlug);
+          setActiveToolSlug(null);
+          setActivePdfToolSlug(null);
+          setAttemptedRoute('');
+        } else {
+          setCurrentView('404');
+          setActiveToolSlug(null);
+          setActivePdfToolSlug(null);
+          setAttemptedRoute(rawHash);
+        }
+      } else if (hash.startsWith('pdf-tool/')) {
+        const slug = hash.replace('pdf-tool/', '');
+        const pdfTool = getPdfToolBySlug(slug);
+        if (pdfTool) {
+          setActivePdfToolSlug(slug);
+          setCurrentView('pdf-tool');
+          setAttemptedRoute('');
+          StorageService.addRecentTool(slug);
+          setRecentTools(StorageService.getRecentTools());
+        } else {
+          setCurrentView('404');
+          setActivePdfToolSlug(null);
+          setAttemptedRoute(rawHash);
+        }
       } else if (hash.startsWith('tool/')) {
         const slug = hash.replace('tool/', '');
         const found = getToolBySlug(slug);
@@ -76,10 +118,20 @@ export default function App() {
           StorageService.addRecentTool(slug);
           setRecentTools(StorageService.getRecentTools());
         } else {
-          // Slug not recognized -> show 404
-          setCurrentView('404');
-          setActiveToolSlug(null);
-          setAttemptedRoute(rawHash);
+          // Check if it matches a PDF tool
+          const pdfTool = getPdfToolBySlug(slug);
+          if (pdfTool) {
+            setActivePdfToolSlug(slug);
+            setCurrentView('pdf-tool');
+            setAttemptedRoute('');
+            StorageService.addRecentTool(slug);
+            setRecentTools(StorageService.getRecentTools());
+          } else {
+            setCurrentView('404');
+            setActiveToolSlug(null);
+            setActivePdfToolSlug(null);
+            setAttemptedRoute(rawHash);
+          }
         }
       } else if (hash.startsWith('category/')) {
         const cat = hash.replace('category/', '') as ToolCategory;
@@ -88,21 +140,25 @@ export default function App() {
           setCurrentView('home');
           setActiveCategory(cat);
           setActiveToolSlug(null);
+          setActivePdfToolSlug(null);
           setAttemptedRoute('');
         } else {
           setCurrentView('404');
           setActiveToolSlug(null);
+          setActivePdfToolSlug(null);
           setAttemptedRoute(rawHash);
         }
       } else if (['privacy', 'security', 'about', 'contact', 'settings', 'terms', 'favorites', 'all-tools'].includes(hash)) {
         setCurrentView(hash);
         setActiveCategory('all');
         setActiveToolSlug(null);
+        setActivePdfToolSlug(null);
         setAttemptedRoute('');
       } else {
         // Unrecognized route -> show 404
         setCurrentView('404');
         setActiveToolSlug(null);
+        setActivePdfToolSlug(null);
         setAttemptedRoute(rawHash);
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -128,6 +184,10 @@ export default function App() {
   const handleNavigate = (view: string, category?: ToolCategory, toolSlug?: string) => {
     if (view === 'tool' && toolSlug) {
       window.location.hash = `tool/${toolSlug}`;
+    } else if (view === 'pdf-tool' && toolSlug) {
+      window.location.hash = `pdf-tool/${toolSlug}`;
+    } else if (view === 'pdf') {
+      window.location.hash = 'pdf';
     } else if (view === 'category' && category) {
       window.location.hash = `category/${category}`;
     } else if (view === 'all-tools' && category) {
@@ -143,15 +203,27 @@ export default function App() {
     handleNavigate('tool', undefined, slug);
   };
 
+  const handleSelectPdfTool = (slug: string) => {
+    window.location.hash = `pdf-tool/${slug}`;
+  };
+
+  const handleSelectPdfCategory = (category: PdfToolCategory | 'all') => {
+    if (category === 'all') {
+      window.location.hash = 'pdf';
+    } else {
+      window.location.hash = `pdf-category/${category}`;
+    }
+  };
+
   const handleToggleFavorite = (slug: string) => {
     const updated = StorageService.toggleFavorite(slug);
     setFavorites(updated);
     const isFav = updated.includes(slug);
-    const tool = getToolBySlug(slug);
+    const tool = getToolBySlug(slug) || getPdfToolBySlug(slug);
     addToast(
       'success',
       isFav ? 'Added to Bookmarks' : 'Removed from Bookmarks',
-      tool ? tool.name : undefined
+      tool ? ('title' in tool ? tool.title : tool.name) : undefined
     );
   };
 
@@ -188,6 +260,7 @@ export default function App() {
   };
 
   const activeTool = activeToolSlug ? getToolBySlug(activeToolSlug) : null;
+  const activePdfTool = activePdfToolSlug ? getPdfToolBySlug(activePdfToolSlug) : null;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#070d18] text-slate-100 selection:bg-cyan-500 selection:text-black">
@@ -219,6 +292,25 @@ export default function App() {
             onClearRecentTools={handleClearRecentTools}
             onClearFavorites={handleClearFavorites}
             onNavigate={handleNavigate}
+          />
+        )}
+
+        {(currentView === 'pdf' || currentView === 'pdf-hub') && (
+          <PdfHubPage
+            activeCategory={activePdfCategory}
+            onSelectCategory={handleSelectPdfCategory}
+            onSelectPdfTool={handleSelectPdfTool}
+            onNavigateHome={() => handleNavigate('home')}
+          />
+        )}
+
+        {currentView === 'pdf-tool' && activePdfTool && (
+          <PdfToolRunnerPage
+            tool={activePdfTool}
+            isFavorite={favorites.includes(activePdfTool.slug)}
+            onToggleFavorite={handleToggleFavorite}
+            onNavigateHub={() => handleNavigate('pdf')}
+            onSelectTool={handleSelectPdfTool}
           />
         )}
 
