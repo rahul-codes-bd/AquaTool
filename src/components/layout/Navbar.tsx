@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Droplet, Star, Moon, Sun, Shield, Menu, X, Grid, Settings, HelpCircle, Lock, FileText } from 'lucide-react';
+import { Droplet, Star, Moon, Sun, Shield, Menu, X, Grid, Settings, HelpCircle, Lock, FileText, Layers } from 'lucide-react';
 import { APP_CONFIG } from '../../config/appConfig';
 import { PrivacyBadge } from '../common/PrivacyBadge';
+import { PWAInstallButton } from '../pwa/PWAInstallButton';
 import { ToolCategory } from '../../types';
 
 interface NavbarProps {
@@ -129,6 +130,22 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <button
             type="button"
+            onClick={() => handleNavClick('fileconv')}
+            className={`px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
+              currentView === 'fileconv' || currentView === 'fileconv-hub' || currentView === 'fileconv-tool'
+                ? 'bg-cyan-500/20 text-cyan-300 font-semibold border border-cyan-400/40 shadow-[0_0_14px_rgba(6,182,212,0.25)]'
+                : 'text-slate-400 hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Converter Hub</span>
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 font-bold">
+              13 Cats
+            </span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => handleNavClick('favorites')}
             className={`px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
               currentView === 'favorites'
@@ -174,6 +191,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Right Action Icons & Privacy badge */}
         <div className="flex items-center gap-2 sm:gap-3">
+          <PWAInstallButton />
+
           <div className="hidden sm:block">
             <PrivacyBadge />
           </div>

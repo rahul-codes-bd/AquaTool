@@ -1,10 +1,15 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { ALL_TOOLS, CATEGORIES, searchTools, getToolsByCategory, getPopularTools } from '../../registry/toolsRegistry';
+import {
+  ALL_UNIFIED_TOOLS,
+  MASTER_CATEGORIES,
+  searchUnifiedTools,
+  getUnifiedToolsByCategory,
+  getPopularUnifiedTools,
+} from '../../registry/unifiedRegistry';
 import { ToolCard } from '../common/ToolCard';
 import { SearchBox } from '../common/SearchBox';
 import { AdSlotPlaceholder } from '../common/AdSlotPlaceholder';
 import { ToolCategory, ToolDefinition } from '../../types';
-import { APP_CONFIG } from '../../config/appConfig';
 import {
   Sparkles,
   Star,
@@ -15,12 +20,10 @@ import {
   ArrowRight,
   Trash2,
   SearchX,
-  Compass,
-  CheckCircle2,
-  ExternalLink,
   ChevronRight,
-  Clock,
   Flame,
+  Filter,
+  Zap,
 } from 'lucide-react';
 import { DynamicIcon } from '../common/DynamicIcon';
 
@@ -37,14 +40,18 @@ interface HomePageProps {
 }
 
 const QUICK_SEARCH_TAGS = [
-  'Image',
-  'PDF',
-  'JWT',
+  'Image Studio',
+  'PDF Suite',
+  'File Converters',
   'QR Code',
-  'Password',
-  'JSON',
+  'JWT Decoder',
+  'Password CSPRNG',
+  'Excel / CSV',
+  'Audio / Video',
+  'Favicon Generator',
+  'EXIF Privacy',
   'Base64',
-  'File Inspector',
+  'CSS Gradients',
 ];
 
 export const HomePage: React.FC<HomePageProps> = ({
@@ -74,34 +81,34 @@ export const HomePage: React.FC<HomePageProps> = ({
     }
   }, [currentView]);
 
-  const popularTools = useMemo(() => getPopularTools(), []);
+  const popularTools = useMemo(() => getPopularUnifiedTools(), []);
 
   const favoriteToolsList = useMemo(() => {
-    return ALL_TOOLS.filter((t) => favorites.includes(t.slug));
+    return ALL_UNIFIED_TOOLS.filter((t) => favorites.includes(t.slug));
   }, [favorites]);
 
   const recentToolsList = useMemo(() => {
     return recentTools
-      .map((slug) => ALL_TOOLS.find((t) => t.slug === slug))
+      .map((slug) => ALL_UNIFIED_TOOLS.find((t) => t.slug === slug))
       .filter((t): t is ToolDefinition => !!t);
   }, [recentTools]);
 
   const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: ALL_TOOLS.length };
-    CATEGORIES.forEach((cat) => {
-      counts[cat.id] = ALL_TOOLS.filter((t) => t.category === cat.id).length;
+    const counts: Record<string, number> = { all: ALL_UNIFIED_TOOLS.length };
+    MASTER_CATEGORIES.forEach((cat) => {
+      counts[cat.id] = ALL_UNIFIED_TOOLS.filter((t) => t.category === cat.id).length;
     });
     return counts;
   }, []);
 
   const filteredTools = useMemo(() => {
     if (searchQuery.trim()) {
-      return searchTools(searchQuery);
+      return searchUnifiedTools(searchQuery);
     }
     if (selectedCategory === 'all') {
-      return ALL_TOOLS;
+      return ALL_UNIFIED_TOOLS;
     }
-    return getToolsByCategory(selectedCategory);
+    return getUnifiedToolsByCategory(selectedCategory);
   }, [searchQuery, selectedCategory]);
 
   // Dedicated Favorites View
@@ -218,33 +225,33 @@ export const HomePage: React.FC<HomePageProps> = ({
   return (
     <div className="space-y-12 py-2">
       {/* Hero Section */}
-      <section className="text-center space-y-6 max-w-3xl mx-auto pt-2 sm:pt-4">
+      <section className="text-center space-y-6 max-w-4xl mx-auto pt-2 sm:pt-4">
         {/* Zero Upload Guarantee Pill */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 text-xs font-medium shadow-[0_0_20px_rgba(6,182,212,0.15)]">
           <ShieldCheck className="w-4 h-4 text-cyan-400" />
-          <span>Zero Server Uploads • 100% In-Browser Execution</span>
+          <span>Zero Server Uploads • 100% In-Browser Local Execution</span>
         </div>
 
         {/* Dynamic Display Headline */}
         <div className="space-y-3">
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
-            Private, Fast & Client-Side <br className="hidden sm:inline" />
+            All-In-One Private <br className="hidden sm:inline" />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-sky-300 to-teal-300">
-              Browser Utilities
+              Browser Utilities & Converters
             </span>
           </h1>
 
           <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Compress photos, decode tokens, inspect magic headers, and generate cryptographically secure keys directly inside your browser memory with zero tracking.
+            Convert documents, process images, edit PDFs, generate assets, decode tokens, and audit privacy locally inside your browser memory with zero server latency.
           </p>
         </div>
 
         {/* Global Search Bar with Keyboard Hotkeys */}
-        <div className="pt-1 max-w-xl mx-auto space-y-3">
+        <div className="pt-1 max-w-2xl mx-auto space-y-3">
           <SearchBox
             value={searchQuery}
             onChange={setSearchQuery}
-            placeholder="Search 10+ offline utilities (press '/' to focus)..."
+            placeholder={`Search ${ALL_UNIFIED_TOOLS.length}+ offline utilities & converters (press '/' to focus)...`}
           />
 
           {/* Quick Search Suggestions */}
@@ -290,7 +297,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </span>
           </button>
 
-          {CATEGORIES.map((cat) => {
+          {MASTER_CATEGORIES.map((cat) => {
             const count = categoryCounts[cat.id] || 0;
             const isSelected = selectedCategory === cat.id && !searchQuery;
             return (
@@ -365,7 +372,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   No Utilities Match "{searchQuery}"
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
-                  We couldn't find any tool with that name or keyword. Try a broader term like "image", "pdf", "crypto", or pick one of the suggestions below.
+                  We couldn't find any tool with that name or keyword. Try a broader term like "image", "pdf", "converter", or select a category above.
                 </p>
               </div>
 
@@ -451,7 +458,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <History className="w-4 h-4 text-cyan-400" />
                   <span>Recently Used Utilities</span>
                   <span className="text-[10px] text-slate-400 font-normal">
-                    (Metadata stored locally)
+                    (Saved locally)
                   </span>
                 </h2>
 
@@ -483,7 +490,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </section>
           )}
 
-          {/* Popular Tools Highlight (When viewing all categories) */}
+          {/* Popular Tools Highlight */}
           {selectedCategory === 'all' && (
             <section className="space-y-4" aria-labelledby="popular-tools-heading">
               <div className="flex items-center justify-between">
@@ -492,9 +499,9 @@ export const HomePage: React.FC<HomePageProps> = ({
                   className="text-base font-semibold text-white flex items-center gap-2"
                 >
                   <Flame className="w-4 h-4 text-cyan-400" />
-                  <span>Popular Utilities</span>
+                  <span>Featured & Popular Utilities</span>
                   <span className="text-xs font-mono text-cyan-400/80 font-normal">
-                    (Most Used)
+                    (Top Picks)
                   </span>
                 </h2>
               </div>
@@ -513,64 +520,144 @@ export const HomePage: React.FC<HomePageProps> = ({
             </section>
           )}
 
-          {/* Category Catalog Grid */}
-          <section className="space-y-4 pt-2" aria-labelledby="catalog-heading">
-            <div className="flex justify-between items-center pb-1">
-              <h2
-                id="catalog-heading"
-                className="text-base font-semibold text-white flex items-center gap-2"
-              >
-                <Grid className="w-4 h-4 text-cyan-400" />
-                <span>
-                  {selectedCategory === 'all'
-                    ? 'Complete Utility Catalog'
-                    : CATEGORIES.find((c) => c.id === selectedCategory)?.name}
-                </span>
-                <span className="text-xs font-mono text-slate-400 font-normal">
-                  ({filteredTools.length})
-                </span>
-              </h2>
+          {/* CATEGORY EXPLORER CATALOG */}
+          {selectedCategory === 'all' ? (
+            /* RENDER ALL MASTER CATEGORIES WITH DETAILED EXPLANATION AND CARD GRIDS */
+            <div className="space-y-14 pt-4">
+              {MASTER_CATEGORIES.map((cat) => {
+                const categoryTools = ALL_UNIFIED_TOOLS.filter((t) => t.category === cat.id);
+                if (categoryTools.length === 0) return null;
 
-              {selectedCategory !== 'all' && (
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategory('all')}
-                  className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
-                >
-                  <span>Show All Categories</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              )}
+                return (
+                  <section
+                    key={cat.id}
+                    id={`category-section-${cat.id}`}
+                    className="space-y-6 pt-4 border-t border-white/10"
+                    aria-labelledby={`heading-cat-${cat.id}`}
+                  >
+                    {/* Category Header Card */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+                      <div className="flex items-start gap-4">
+                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center shrink-0`}>
+                          <DynamicIcon name={cat.iconName} size={24} />
+                        </div>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h2
+                              id={`heading-cat-${cat.id}`}
+                              className="text-lg sm:text-xl font-bold text-white"
+                            >
+                              {cat.name}
+                            </h2>
+                            <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-white/10 text-cyan-300 border border-white/10">
+                              {cat.tagline || cat.name}
+                            </span>
+                            <span className="text-xs font-mono text-slate-400">
+                              ({categoryTools.length} utilities)
+                            </span>
+                          </div>
+                          {/* Purpose & Usage Description ("ki kajer, kiser jonno") */}
+                          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
+                            {cat.description}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCategory(cat.id)}
+                        className="self-start md:self-center px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-cyan-500/15 text-slate-300 hover:text-cyan-300 border border-white/10 hover:border-cyan-500/30 transition-all flex items-center gap-1.5 shrink-0"
+                      >
+                        <span>Filter {cat.name}</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    {/* Tools Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {categoryTools.map((t) => (
+                        <ToolCard
+                          key={t.slug}
+                          tool={t}
+                          isFavorite={favorites.includes(t.slug)}
+                          onToggleFavorite={onToggleFavorite}
+                          onSelectTool={onSelectTool}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
             </div>
+          ) : (
+            /* SINGLE CATEGORY FILTERED VIEW */
+            <section className="space-y-6 pt-2" aria-labelledby="single-cat-heading">
+              {(() => {
+                const currentCatMeta = MASTER_CATEGORIES.find((c) => c.id === selectedCategory);
+                return (
+                  currentCatMeta && (
+                    <div className="p-6 sm:p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl space-y-3">
+                      <div className="flex items-center justify-between flex-wrap gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${currentCatMeta.color} flex items-center justify-center shrink-0`}>
+                            <DynamicIcon name={currentCatMeta.iconName} size={24} />
+                          </div>
+                          <div>
+                            <h2 id="single-cat-heading" className="text-xl sm:text-2xl font-bold text-white">
+                              {currentCatMeta.name}
+                            </h2>
+                            <p className="text-xs text-cyan-300 font-mono">
+                              {currentCatMeta.tagline} • {filteredTools.length} available tools
+                            </p>
+                          </div>
+                        </div>
 
-            {filteredTools.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredTools.map((t) => (
-                  <ToolCard
-                    key={t.slug}
-                    tool={t}
-                    isFavorite={favorites.includes(t.slug)}
-                    onToggleFavorite={onToggleFavorite}
-                    onSelectTool={onSelectTool}
-                  />
-                ))}
-              </div>
-            ) : (
-              /* Empty Category State */
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-10 text-center space-y-3 backdrop-blur-md">
-                <p className="text-sm text-slate-300 font-medium">
-                  No tools found in this category.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategory('all')}
-                  className="px-4 py-2 rounded-xl text-xs bg-white/10 hover:bg-white/15 text-slate-200 border border-white/10 transition-colors"
-                >
-                  View All Tools
-                </button>
-              </div>
-            )}
-          </section>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCategory('all')}
+                          className="px-4 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all flex items-center gap-1.5"
+                        >
+                          <span>Show All Categories</span>
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pt-1 border-t border-white/10">
+                        {currentCatMeta.description}
+                      </p>
+                    </div>
+                  )
+                );
+              })()}
+
+              {filteredTools.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredTools.map((t) => (
+                    <ToolCard
+                      key={t.slug}
+                      tool={t}
+                      isFavorite={favorites.includes(t.slug)}
+                      onToggleFavorite={onToggleFavorite}
+                      onSelectTool={onSelectTool}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-10 text-center space-y-3 backdrop-blur-md">
+                  <p className="text-sm text-slate-300 font-medium">
+                    No tools found in this category.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCategory('all')}
+                    className="px-4 py-2 rounded-xl text-xs bg-white/10 hover:bg-white/15 text-slate-200 border border-white/10 transition-colors"
+                  >
+                    View All Categories
+                  </button>
+                </div>
+              )}
+            </section>
+          )}
 
           {/* In-feed Non-Intrusive Ad Slot (Feature Flag controlled, 0 CLS, outside actions & search) */}
           <AdSlotPlaceholder

@@ -75,11 +75,13 @@ export const ToolCard: React.FC<ToolCardProps> = ({
           </p>
         </div>
 
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 pt-1">
-          <span className="text-[10px] px-2 py-0.5 bg-white/10 rounded text-slate-300">
-            Client-Side
-          </span>
+        {/* Tags & Origin Hub Badge */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+          {tool.hubName && (
+            <span className="text-[10px] font-medium px-2 py-0.5 bg-cyan-500/15 text-cyan-300 rounded-md border border-cyan-500/25">
+              {tool.hubName}
+            </span>
+          )}
           {tool.tags.slice(0, 2).map((tag) => (
             <span key={tag} className="text-[10px] px-2 py-0.5 bg-white/5 rounded text-slate-400 border border-white/5">
               {tag}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Sparkles, ShieldAlert, Cpu, CheckCircle2, AlertClock, RefreshCw } from 'lucide-react';
+import { Search, Sparkles, ShieldAlert, Cpu, CheckCircle2, Clock, RefreshCw } from 'lucide-react';
 import { ImageEngine } from '../../services/imageEngine';
 
 interface AdvancedAISuiteProps {
@@ -54,7 +54,7 @@ export const AdvancedAISuite: React.FC<AdvancedAISuiteProps> = ({ currentFile })
     try {
       const report = await ImageEngine.extractMetadata(currentFile);
       setResultText(
-        `Local Image Inspector Report:\n- Dimensions: ${report.width}x${report.height}\n- MIME Type: ${report.mimeType}\n- File Size: ${(report.fileSize / 1024).toFixed(1)} KB\n- EXIF Tags: ${report.exifTags.length} found\n- Alpha Transparency: ${report.hasAlphaChannel ? 'Supported' : 'Opaque'}`
+        `Local Image Inspector Report:\n- Dimensions: ${report.dimensions.width}x${report.dimensions.height}\n- MIME Type: ${report.mimeType}\n- File Size: ${(report.fileSizeBytes / 1024).toFixed(1)} KB\n- EXIF Tags: ${report.exifTags.length} found\n- Alpha Transparency: ${report.hasAlphaChannel ? 'Supported' : 'Opaque'}`
       );
     } catch (err) {
       setResultText('OCR inspection failed.');

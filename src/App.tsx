@@ -21,6 +21,9 @@ import { StorageService } from './services/storage';
 import { ALL_TOOLS, getToolBySlug } from './registry/toolsRegistry';
 import { PDF_CATEGORIES, getPdfToolBySlug } from './registry/pdfRegistry';
 import { IMAGE_CATEGORIES, getImageToolBySlug, IMAGE_TOOLS } from './registry/imageRegistry';
+import { getFileConvToolBySlug } from './registry/fileConvRegistry';
+import { FileConvHubPage } from './components/fileconv/FileConvHubPage';
+import { FileConvRunnerPage } from './components/fileconv/FileConvRunnerPage';
 import { ToolCategory, ToastMessage } from './types';
 import { PdfToolCategory } from './types/pdf';
 import { ImageToolCategory } from './types/image';
@@ -35,6 +38,7 @@ export default function App() {
   const [activeToolSlug, setActiveToolSlug] = useState<string | null>(null);
   const [activePdfToolSlug, setActivePdfToolSlug] = useState<string | null>(null);
   const [activeImageToolSlug, setActiveImageToolSlug] = useState<string | null>(null);
+  const [activeFileConvToolSlug, setActiveFileConvToolSlug] = useState<string | null>(null);
   const [imageInitialFiles, setImageInitialFiles] = useState<File[]>([]);
   const [attemptedRoute, setAttemptedRoute] = useState<string>('');
   const [favorites, setFavorites] = useState<string[]>(() => StorageService.getFavorites());
@@ -162,12 +166,15 @@ export default function App() {
         const slug = hash.replace('tool/', '');
         const imageTool = getImageToolBySlug(slug);
         const found = getToolBySlug(slug);
+        const pdfTool = getPdfToolBySlug(slug);
+        const fcTool = getFileConvToolBySlug(slug);
 
         if (imageTool || (found && found.componentId === 'ImageToolRunner')) {
           setActiveImageToolSlug(slug);
           setCurrentView('image-tool');
           setActiveToolSlug(null);
           setActivePdfToolSlug(null);
+          setActiveFileConvToolSlug(null);
           setAttemptedRoute('');
           StorageService.addRecentTool(slug);
           setRecentTools(StorageService.getRecentTools());
@@ -176,43 +183,83 @@ export default function App() {
           setCurrentView('tool');
           setActiveImageToolSlug(null);
           setActivePdfToolSlug(null);
+          setActiveFileConvToolSlug(null);
+          setAttemptedRoute('');
+          StorageService.addRecentTool(slug);
+          setRecentTools(StorageService.getRecentTools());
+        } else if (pdfTool) {
+          setActivePdfToolSlug(slug);
+          setCurrentView('pdf-tool');
+          setActiveToolSlug(null);
+          setActiveImageToolSlug(null);
+          setActiveFileConvToolSlug(null);
+          setAttemptedRoute('');
+          StorageService.addRecentTool(slug);
+          setRecentTools(StorageService.getRecentTools());
+        } else if (fcTool) {
+          setActiveFileConvToolSlug(slug);
+          setCurrentView('fileconv-tool');
+          setActiveToolSlug(null);
+          setActivePdfToolSlug(null);
+          setActiveImageToolSlug(null);
           setAttemptedRoute('');
           StorageService.addRecentTool(slug);
           setRecentTools(StorageService.getRecentTools());
         } else {
-          // Check if it matches a PDF tool
-          const pdfTool = getPdfToolBySlug(slug);
-          if (pdfTool) {
-            setActivePdfToolSlug(slug);
-            setCurrentView('pdf-tool');
-            setActiveToolSlug(null);
-            setActiveImageToolSlug(null);
-            setAttemptedRoute('');
-            StorageService.addRecentTool(slug);
-            setRecentTools(StorageService.getRecentTools());
-          } else {
-            setCurrentView('404');
-            setActiveToolSlug(null);
-            setActivePdfToolSlug(null);
-            setActiveImageToolSlug(null);
-            setAttemptedRoute(rawHash);
-          }
+          setCurrentView('404');
+          setActiveToolSlug(null);
+          setActivePdfToolSlug(null);
+          setActiveImageToolSlug(null);
+          setActiveFileConvToolSlug(null);
+          setAttemptedRoute(rawHash);
         }
       } else if (hash.startsWith('category/')) {
         const cat = hash.replace('category/', '') as ToolCategory;
-        const validCategories: ToolCategory[] = ['converters', 'documents', 'developer', 'generators', 'utilities'];
+        const validCategories: ToolCategory[] = [
+          'converters',
+          'documents',
+          'images',
+          'generators',
+          'developer',
+          'security',
+          'workflows',
+          'utilities',
+        ];
         if (validCategories.includes(cat)) {
           setCurrentView('home');
           setActiveCategory(cat);
           setActiveToolSlug(null);
           setActivePdfToolSlug(null);
           setActiveImageToolSlug(null);
+          setActiveFileConvToolSlug(null);
           setAttemptedRoute('');
         } else {
           setCurrentView('404');
           setActiveToolSlug(null);
           setActivePdfToolSlug(null);
           setActiveImageToolSlug(null);
+          setActiveFileConvToolSlug(null);
+          setAttemptedRoute(rawHash);
+        }
+      } else if (hash === 'fileconv' || hash === 'fileconv-hub') {
+        setCurrentView('fileconv-hub');
+        setActiveFileConvToolSlug(null);
+        setActiveToolSlug(null);
+        setActivePdfToolSlug(null);
+        setActiveImageToolSlug(null);
+        setAttemptedRoute('');
+      } else if (hash.startsWith('fileconv-tool/')) {
+        const slug = hash.replace('fileconv-tool/', '');
+        const fcTool = getFileConvToolBySlug(slug);
+        if (fcTool) {
+          setActiveFileConvToolSlug(slug);
+          setCurrentView('fileconv-tool');
+          setAttemptedRoute('');
+          StorageService.addRecentTool(slug);
+          setRecentTools(StorageService.getRecentTools());
+        } else {
+          setCurrentView('404');
+          setActiveFileConvToolSlug(null);
           setAttemptedRoute(rawHash);
         }
       } else if (['privacy', 'security', 'about', 'contact', 'settings', 'terms', 'favorites', 'all-tools'].includes(hash)) {
@@ -257,6 +304,10 @@ export default function App() {
       window.location.hash = `pdf-tool/${toolSlug}`;
     } else if (view === 'image-tool' && toolSlug) {
       window.location.hash = `image-tool/${toolSlug}`;
+    } else if (view === 'fileconv' || view === 'fileconv-hub') {
+      window.location.hash = 'fileconv';
+    } else if (view === 'fileconv-tool' && toolSlug) {
+      window.location.hash = `fileconv-tool/${toolSlug}`;
     } else if (view === 'pdf') {
       window.location.hash = 'pdf';
     } else if (view === 'images' || view === 'image-hub') {
@@ -350,6 +401,7 @@ export default function App() {
   const activeTool = activeToolSlug ? getToolBySlug(activeToolSlug) : null;
   const activePdfTool = activePdfToolSlug ? getPdfToolBySlug(activePdfToolSlug) : null;
   const activeImageTool = activeImageToolSlug ? getImageToolBySlug(activeImageToolSlug) : null;
+  const activeFileConvTool = activeFileConvToolSlug ? getFileConvToolBySlug(activeFileConvToolSlug) : null;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#070d18] text-slate-100 selection:bg-cyan-500 selection:text-black">
@@ -412,6 +464,14 @@ export default function App() {
             onSelectPdfTool={handleSelectPdfTool}
             onNavigateHome={() => handleNavigate('home')}
           />
+        )}
+
+        {(currentView === 'fileconv' || currentView === 'fileconv-hub') && (
+          <FileConvHubPage onSelectTool={(slug) => handleNavigate('fileconv-tool', undefined, slug)} />
+        )}
+
+        {currentView === 'fileconv-tool' && activeFileConvTool && (
+          <FileConvRunnerPage tool={activeFileConvTool} onBack={() => handleNavigate('fileconv')} />
         )}
 
         {currentView === 'pdf-tool' && activePdfTool && (

@@ -579,6 +579,10 @@ export class ImageEngine {
     return clean;
   }
 
+  static async extractMetadata(file: File | Blob): Promise<ImageMetadataReport> {
+    return this.inspectImageMetadata(file);
+  }
+
   /**
    * Inspects image dimensions and metadata safely
    */

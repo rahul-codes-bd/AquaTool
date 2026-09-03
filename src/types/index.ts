@@ -1,8 +1,11 @@
 export type ToolCategory =
   | 'converters'
   | 'documents'
-  | 'developer'
+  | 'images'
   | 'generators'
+  | 'developer'
+  | 'security'
+  | 'workflows'
   | 'utilities';
 
 export interface CategoryMeta {
@@ -11,6 +14,7 @@ export interface CategoryMeta {
   description: string;
   iconName: string;
   color: string;
+  tagline?: string;
 }
 
 export type InputType =
@@ -53,12 +57,14 @@ export interface ToolDefinition {
   supportedInputTypes: string[];
   supportedOutputTypes: string[];
   privacyNote: string;
-  browserSupportNote: string;
+  browserSupportNote?: string;
   tags: string[];
   isPopular?: boolean;
   isNew?: boolean;
   maxFileSizeMB?: number;
-  componentId: string;
+  componentId?: string;
+  hub?: 'general' | 'fileconv' | 'image' | 'pdf';
+  hubName?: string;
 }
 
 export interface UserPreferences {

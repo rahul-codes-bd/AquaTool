@@ -18,7 +18,7 @@ describe('FileHandlerService', () => {
       buffer = contentBytes.buffer.slice(
         contentBytes.byteOffset,
         contentBytes.byteOffset + contentBytes.byteLength
-      );
+      ) as ArrayBuffer;
     } else {
       buffer = new Uint8Array(sizeBytes).buffer;
     }

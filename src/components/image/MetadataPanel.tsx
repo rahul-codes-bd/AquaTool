@@ -185,7 +185,7 @@ export const MetadataPanel: React.FC<MetadataPanelProps> = ({ metadata, onStripE
                 className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5 text-slate-300"
               >
                 <span className="font-medium text-slate-400">{sanitize(tag.name)}</span>
-                <span className="font-mono text-cyan-200">{sanitize(tag.value)}</span>
+                <span className="font-mono text-cyan-200">{sanitize(String(tag.value))}</span>
               </div>
             ))}
           </div>
