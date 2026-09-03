@@ -10,6 +10,18 @@ export interface FeatureFlags {
   enableTelemetry: false;
   /** Experimental or beta tools toggle. Default: false */
   enableExperimentalFeatures: boolean;
+
+  // AquaTools Feature Flags (Disabled by default)
+  enableSmartExportPresets: boolean;
+  enableQualitySizeLab: boolean;
+  enablePrivacyInspector: boolean;
+  enableEcommercePack: boolean;
+  enableSocialPack: boolean;
+  enableScreenshotBeautifier: boolean;
+  enablePrintSheet: boolean;
+  enableQrArtboard: boolean;
+  enableSizeBudgetTool: boolean;
+  enableLocalWorkflow: boolean;
 }
 
 export const DEFAULT_FEATURE_FLAGS: FeatureFlags = {
@@ -17,6 +29,17 @@ export const DEFAULT_FEATURE_FLAGS: FeatureFlags = {
   adPreviewMode: false,
   enableTelemetry: false,
   enableExperimentalFeatures: false,
+
+  enableSmartExportPresets: false,
+  enableQualitySizeLab: false,
+  enablePrivacyInspector: false,
+  enableEcommercePack: false,
+  enableSocialPack: false,
+  enableScreenshotBeautifier: false,
+  enablePrintSheet: false,
+  enableQrArtboard: false,
+  enableSizeBudgetTool: false,
+  enableLocalWorkflow: false,
 };
 
 const FEATURE_FLAGS_STORAGE_KEY = 'aquatools_feature_flags_v1';

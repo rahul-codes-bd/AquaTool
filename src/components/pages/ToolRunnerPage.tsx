@@ -4,6 +4,8 @@ import { DynamicIcon } from '../common/DynamicIcon';
 import { PrivacyBadge } from '../common/PrivacyBadge';
 import { Star, ArrowLeft, ShieldCheck, HelpCircle } from 'lucide-react';
 import { ALL_TOOLS, getRelatedTools } from '../../registry/toolsRegistry';
+import { getImageToolBySlug } from '../../registry/imageRegistry';
+import { ImageToolRunnerPage } from './ImageToolRunnerPage';
 import { ToolCard } from '../common/ToolCard';
 import { AdSlotPlaceholder } from '../common/AdSlotPlaceholder';
 
@@ -273,12 +275,17 @@ export const ToolRunnerPage: React.FC<ToolRunnerPageProps> = ({
         return <WebBoilerplateTool defaultTab="og" />;
       case 'file-info':
         return <FileInfoTool />;
-      default:
+      default: {
+        const imageToolDef = getImageToolBySlug(tool.slug);
+        if (imageToolDef) {
+          return <ImageToolRunnerPage tool={imageToolDef} onBack={onNavigateHome} />;
+        }
         return (
           <div className="glass-panel p-8 text-center rounded-2xl text-slate-400">
             Tool runner is loading...
           </div>
         );
+      }
     }
   };
 

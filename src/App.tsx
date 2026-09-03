@@ -6,6 +6,8 @@ import { HomePage } from './components/pages/HomePage';
 import { ToolRunnerPage } from './components/pages/ToolRunnerPage';
 import { PdfHubPage } from './components/pages/PdfHubPage';
 import { PdfToolRunnerPage } from './components/pages/PdfToolRunnerPage';
+import { ImageHubPage } from './components/pages/ImageHubPage';
+import { ImageToolRunnerPage } from './components/pages/ImageToolRunnerPage';
 import { PrivacyPage } from './components/pages/PrivacyPage';
 import { SecurityPage } from './components/pages/SecurityPage';
 import { AboutPage } from './components/pages/AboutPage';
@@ -18,8 +20,10 @@ import { AdSlotPlaceholder } from './components/common/AdSlotPlaceholder';
 import { StorageService } from './services/storage';
 import { ALL_TOOLS, getToolBySlug } from './registry/toolsRegistry';
 import { PDF_CATEGORIES, getPdfToolBySlug } from './registry/pdfRegistry';
+import { IMAGE_CATEGORIES, getImageToolBySlug, IMAGE_TOOLS } from './registry/imageRegistry';
 import { ToolCategory, ToastMessage } from './types';
 import { PdfToolCategory } from './types/pdf';
+import { ImageToolCategory } from './types/image';
 import { APP_CONFIG } from './config/appConfig';
 import { t } from './i18n';
 
@@ -27,8 +31,11 @@ export default function App() {
   const [currentView, setCurrentView] = useState<string>('home');
   const [activeCategory, setActiveCategory] = useState<ToolCategory | 'all'>('all');
   const [activePdfCategory, setActivePdfCategory] = useState<PdfToolCategory | 'all'>('all');
+  const [activeImageCategory, setActiveImageCategory] = useState<ImageToolCategory | 'all'>('all');
   const [activeToolSlug, setActiveToolSlug] = useState<string | null>(null);
   const [activePdfToolSlug, setActivePdfToolSlug] = useState<string | null>(null);
+  const [activeImageToolSlug, setActiveImageToolSlug] = useState<string | null>(null);
+  const [imageInitialFiles, setImageInitialFiles] = useState<File[]>([]);
   const [attemptedRoute, setAttemptedRoute] = useState<string>('');
   const [favorites, setFavorites] = useState<string[]>(() => StorageService.getFavorites());
   const [recentTools, setRecentTools] = useState<string[]>(() => StorageService.getRecentTools());
@@ -72,12 +79,52 @@ export default function App() {
         setActiveCategory('all');
         setActiveToolSlug(null);
         setActivePdfToolSlug(null);
+        setActiveImageToolSlug(null);
         setAttemptedRoute('');
+      } else if (hash === 'images' || hash === 'image-hub') {
+        setCurrentView('image-hub');
+        setActiveImageCategory('all');
+        setActiveToolSlug(null);
+        setActivePdfToolSlug(null);
+        setActiveImageToolSlug(null);
+        setAttemptedRoute('');
+      } else if (hash.startsWith('image-category/') || hash.startsWith('images/')) {
+        const catSlug = hash.replace(/^(image-category\/|images\/)/, '') as ImageToolCategory;
+        const validImageCat = IMAGE_CATEGORIES.some((c) => c.id === catSlug);
+        if (validImageCat) {
+          setCurrentView('image-hub');
+          setActiveImageCategory(catSlug);
+          setActiveToolSlug(null);
+          setActivePdfToolSlug(null);
+          setActiveImageToolSlug(null);
+          setAttemptedRoute('');
+        } else {
+          setCurrentView('404');
+          setActiveToolSlug(null);
+          setActivePdfToolSlug(null);
+          setActiveImageToolSlug(null);
+          setAttemptedRoute(rawHash);
+        }
+      } else if (hash.startsWith('image-tool/')) {
+        const slug = hash.replace('image-tool/', '');
+        const imageTool = getImageToolBySlug(slug);
+        if (imageTool) {
+          setActiveImageToolSlug(slug);
+          setCurrentView('image-tool');
+          setAttemptedRoute('');
+          StorageService.addRecentTool(slug);
+          setRecentTools(StorageService.getRecentTools());
+        } else {
+          setCurrentView('404');
+          setActiveImageToolSlug(null);
+          setAttemptedRoute(rawHash);
+        }
       } else if (hash === 'pdf' || hash === 'pdf-hub') {
         setCurrentView('pdf-hub');
         setActivePdfCategory('all');
         setActiveToolSlug(null);
         setActivePdfToolSlug(null);
+        setActiveImageToolSlug(null);
         setAttemptedRoute('');
       } else if (hash.startsWith('pdf-category/') || hash.startsWith('pdf/')) {
         const catSlug = hash.replace(/^(pdf-category\/|pdf\/)/, '') as PdfToolCategory;
@@ -87,11 +134,13 @@ export default function App() {
           setActivePdfCategory(catSlug);
           setActiveToolSlug(null);
           setActivePdfToolSlug(null);
+          setActiveImageToolSlug(null);
           setAttemptedRoute('');
         } else {
           setCurrentView('404');
           setActiveToolSlug(null);
           setActivePdfToolSlug(null);
+          setActiveImageToolSlug(null);
           setAttemptedRoute(rawHash);
         }
       } else if (hash.startsWith('pdf-tool/')) {
@@ -100,6 +149,7 @@ export default function App() {
         if (pdfTool) {
           setActivePdfToolSlug(slug);
           setCurrentView('pdf-tool');
+          setActiveImageToolSlug(null);
           setAttemptedRoute('');
           StorageService.addRecentTool(slug);
           setRecentTools(StorageService.getRecentTools());
@@ -110,10 +160,22 @@ export default function App() {
         }
       } else if (hash.startsWith('tool/')) {
         const slug = hash.replace('tool/', '');
+        const imageTool = getImageToolBySlug(slug);
         const found = getToolBySlug(slug);
-        if (found) {
+
+        if (imageTool || (found && found.componentId === 'ImageToolRunner')) {
+          setActiveImageToolSlug(slug);
+          setCurrentView('image-tool');
+          setActiveToolSlug(null);
+          setActivePdfToolSlug(null);
+          setAttemptedRoute('');
+          StorageService.addRecentTool(slug);
+          setRecentTools(StorageService.getRecentTools());
+        } else if (found) {
           setActiveToolSlug(slug);
           setCurrentView('tool');
+          setActiveImageToolSlug(null);
+          setActivePdfToolSlug(null);
           setAttemptedRoute('');
           StorageService.addRecentTool(slug);
           setRecentTools(StorageService.getRecentTools());
@@ -123,6 +185,8 @@ export default function App() {
           if (pdfTool) {
             setActivePdfToolSlug(slug);
             setCurrentView('pdf-tool');
+            setActiveToolSlug(null);
+            setActiveImageToolSlug(null);
             setAttemptedRoute('');
             StorageService.addRecentTool(slug);
             setRecentTools(StorageService.getRecentTools());
@@ -130,6 +194,7 @@ export default function App() {
             setCurrentView('404');
             setActiveToolSlug(null);
             setActivePdfToolSlug(null);
+            setActiveImageToolSlug(null);
             setAttemptedRoute(rawHash);
           }
         }
@@ -141,11 +206,13 @@ export default function App() {
           setActiveCategory(cat);
           setActiveToolSlug(null);
           setActivePdfToolSlug(null);
+          setActiveImageToolSlug(null);
           setAttemptedRoute('');
         } else {
           setCurrentView('404');
           setActiveToolSlug(null);
           setActivePdfToolSlug(null);
+          setActiveImageToolSlug(null);
           setAttemptedRoute(rawHash);
         }
       } else if (['privacy', 'security', 'about', 'contact', 'settings', 'terms', 'favorites', 'all-tools'].includes(hash)) {
@@ -153,12 +220,14 @@ export default function App() {
         setActiveCategory('all');
         setActiveToolSlug(null);
         setActivePdfToolSlug(null);
+        setActiveImageToolSlug(null);
         setAttemptedRoute('');
       } else {
         // Unrecognized route -> show 404
         setCurrentView('404');
         setActiveToolSlug(null);
         setActivePdfToolSlug(null);
+        setActiveImageToolSlug(null);
         setAttemptedRoute(rawHash);
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -186,8 +255,12 @@ export default function App() {
       window.location.hash = `tool/${toolSlug}`;
     } else if (view === 'pdf-tool' && toolSlug) {
       window.location.hash = `pdf-tool/${toolSlug}`;
+    } else if (view === 'image-tool' && toolSlug) {
+      window.location.hash = `image-tool/${toolSlug}`;
     } else if (view === 'pdf') {
       window.location.hash = 'pdf';
+    } else if (view === 'images' || view === 'image-hub') {
+      window.location.hash = 'images';
     } else if (view === 'category' && category) {
       window.location.hash = `category/${category}`;
     } else if (view === 'all-tools' && category) {
@@ -215,11 +288,26 @@ export default function App() {
     }
   };
 
+  const handleSelectImageTool = (slug: string, initialFiles?: File[]) => {
+    if (initialFiles && initialFiles.length > 0) {
+      setImageInitialFiles(initialFiles);
+    }
+    window.location.hash = `image-tool/${slug}`;
+  };
+
+  const handleSelectImageCategory = (category: ImageToolCategory | 'all') => {
+    if (category === 'all') {
+      window.location.hash = 'images';
+    } else {
+      window.location.hash = `image-category/${category}`;
+    }
+  };
+
   const handleToggleFavorite = (slug: string) => {
     const updated = StorageService.toggleFavorite(slug);
     setFavorites(updated);
     const isFav = updated.includes(slug);
-    const tool = getToolBySlug(slug) || getPdfToolBySlug(slug);
+    const tool = getToolBySlug(slug) || getPdfToolBySlug(slug) || getImageToolBySlug(slug);
     addToast(
       'success',
       isFav ? 'Added to Bookmarks' : 'Removed from Bookmarks',
@@ -261,6 +349,7 @@ export default function App() {
 
   const activeTool = activeToolSlug ? getToolBySlug(activeToolSlug) : null;
   const activePdfTool = activePdfToolSlug ? getPdfToolBySlug(activePdfToolSlug) : null;
+  const activeImageTool = activeImageToolSlug ? getImageToolBySlug(activeImageToolSlug) : null;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#070d18] text-slate-100 selection:bg-cyan-500 selection:text-black">
@@ -292,6 +381,27 @@ export default function App() {
             onClearRecentTools={handleClearRecentTools}
             onClearFavorites={handleClearFavorites}
             onNavigate={handleNavigate}
+          />
+        )}
+
+        {(currentView === 'images' || currentView === 'image-hub') && (
+          <ImageHubPage
+            activeCategory={activeImageCategory}
+            onSelectCategory={handleSelectImageCategory}
+            onSelectImageTool={handleSelectImageTool}
+            onNavigateHome={() => handleNavigate('home')}
+          />
+        )}
+
+        {currentView === 'image-tool' && activeImageTool && (
+          <ImageToolRunnerPage
+            tool={activeImageTool}
+            initialFiles={imageInitialFiles}
+            onBack={() => {
+              setImageInitialFiles([]);
+              handleNavigate('images');
+            }}
+            onSelectOtherTool={handleSelectImageTool}
           />
         )}
 
