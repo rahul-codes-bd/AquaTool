@@ -120,8 +120,22 @@ describe('Registry Consistency & Routing Integrity Suite', () => {
     expect(pdfResults.length).toBeGreaterThan(10);
     expect(pdfResults.every((t) => JSON.stringify(t).toLowerCase().includes('pdf'))).toBe(true);
 
+    // Hashtag prefix normalization check
+    const hashtagPdfResults = searchUnifiedTools('#pdf');
+    expect(hashtagPdfResults.length).toBe(pdfResults.length);
+
+    const hashtagPngResults = searchUnifiedTools('#png');
+    expect(hashtagPngResults.length).toBeGreaterThan(0);
+
     const convertResults = searchUnifiedTools('convert');
     expect(convertResults.length).toBeGreaterThan(5);
+
+    // Quick picks tag search check
+    const faviconResults = searchUnifiedTools('Favicon Generator');
+    expect(faviconResults.length).toBeGreaterThan(0);
+
+    const qrResults = searchUnifiedTools('QR Code');
+    expect(qrResults.length).toBeGreaterThan(0);
 
     const noResults = searchUnifiedTools('xyz987nonexistentpattern123');
     expect(noResults).toEqual([]);

@@ -21,6 +21,15 @@ describe('File Conversion Suite & Security Registry', () => {
     expect(sanitized).not.toContain('onclick');
   });
 
+  it('sanitizes dangerous HTML tags and event handlers', () => {
+    const maliciousHtml = `<div><script>alert(1)</script><iframe src="evil.com"></iframe><img src="x" onerror="alert(2)"/><a href="javascript:alert(3)">click</a></div>`;
+    const sanitized = FileValidator.sanitizeHtmlText(maliciousHtml);
+    expect(sanitized).not.toContain('script');
+    expect(sanitized).not.toContain('iframe');
+    expect(sanitized).not.toContain('onerror');
+    expect(sanitized).not.toContain('javascript:');
+  });
+
   it('validates archive paths for path traversal prevention', () => {
     expect(FileValidator.checkArchiveEntryPath('normal/file.txt')).toBe(true);
     expect(FileValidator.checkArchiveEntryPath('../traversal.txt')).toBe(false);

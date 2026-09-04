@@ -193,6 +193,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   isFavorite={true}
                   onToggleFavorite={onToggleFavorite}
                   onSelectTool={onSelectTool}
+                  onTagClick={handleTagClick}
                 />
               ))}
             </div>
@@ -391,6 +392,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   isFavorite={favorites.includes(t.slug)}
                   onToggleFavorite={onToggleFavorite}
                   onSelectTool={onSelectTool}
+                  onTagClick={handleTagClick}
                 />
               ))}
             </div>
@@ -475,6 +477,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     isFavorite={true}
                     onToggleFavorite={onToggleFavorite}
                     onSelectTool={onSelectTool}
+                    onTagClick={handleTagClick}
                   />
                 ))}
               </div>
@@ -518,6 +521,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     isFavorite={favorites.includes(t.slug)}
                     onToggleFavorite={onToggleFavorite}
                     onSelectTool={onSelectTool}
+                    onTagClick={handleTagClick}
                   />
                 ))}
               </div>
@@ -548,6 +552,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     isFavorite={favorites.includes(t.slug)}
                     onToggleFavorite={onToggleFavorite}
                     onSelectTool={onSelectTool}
+                    onTagClick={handleTagClick}
                   />
                 ))}
               </div>
@@ -616,6 +621,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                           isFavorite={favorites.includes(t.slug)}
                           onToggleFavorite={onToggleFavorite}
                           onSelectTool={onSelectTool}
+                          onTagClick={handleTagClick}
                         />
                       ))}
                     </div>
@@ -673,6 +679,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                       isFavorite={favorites.includes(t.slug)}
                       onToggleFavorite={onToggleFavorite}
                       onSelectTool={onSelectTool}
+                      onTagClick={handleTagClick}
                     />
                   ))}
                 </div>

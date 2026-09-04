@@ -185,31 +185,34 @@ export const getUnifiedToolsByCategory = (category: ToolCategory | 'all'): ToolD
 };
 
 export const searchUnifiedTools = (query: string): ToolDefinition[] => {
-  if (!query.trim()) return ALL_UNIFIED_TOOLS;
-  const q = query.toLowerCase().trim();
+  if (!query || !query.trim()) return ALL_UNIFIED_TOOLS;
+  // Strip leading hashtag or search prefixes so searching '#pdf' or '#png' works immediately
+  const cleanQuery = query.replace(/^[#\s]+/, '').toLowerCase().trim();
+  if (!cleanQuery) return ALL_UNIFIED_TOOLS;
   
-  // Try exact match first
+  // Try full phrase match first
   const exactMatches = ALL_UNIFIED_TOOLS.filter(
     (tool) =>
-      tool.name.toLowerCase().includes(q) ||
-      tool.description.toLowerCase().includes(q) ||
-      tool.tags.some((tag) => tag.toLowerCase().includes(q)) ||
-      tool.supportedInputTypes.some((it) => it.toLowerCase().includes(q)) ||
-      tool.supportedOutputTypes.some((ot) => ot.toLowerCase().includes(q))
+      tool.name.toLowerCase().includes(cleanQuery) ||
+      tool.description.toLowerCase().includes(cleanQuery) ||
+      tool.tags.some((tag) => tag.toLowerCase().replace(/^#/, '').includes(cleanQuery)) ||
+      tool.supportedInputTypes.some((it) => it.toLowerCase().includes(cleanQuery)) ||
+      tool.supportedOutputTypes.some((ot) => ot.toLowerCase().includes(cleanQuery)) ||
+      (tool.hubName && tool.hubName.toLowerCase().includes(cleanQuery))
   );
   if (exactMatches.length > 0) return exactMatches;
 
-  // Split query into terms if exact match yields nothing
-  const terms = q.split(/[\s,/\-\+]+/).filter(Boolean);
+  // Split query into terms if exact phrase yields nothing
+  const terms = cleanQuery.split(/[\s,/\-\+]+/).map((t) => t.replace(/^#/, '')).filter(Boolean);
   if (terms.length <= 1) return exactMatches;
 
   return ALL_UNIFIED_TOOLS.filter((tool) => {
-    // Return true if any term matches
+    // Return true if any term matches name, description, tags, or I/O
     return terms.some((term) => {
       return (
         tool.name.toLowerCase().includes(term) ||
         tool.description.toLowerCase().includes(term) ||
-        tool.tags.some((tag) => tag.toLowerCase().includes(term)) ||
+        tool.tags.some((tag) => tag.toLowerCase().replace(/^#/, '').includes(term)) ||
         tool.supportedInputTypes.some((it) => it.toLowerCase().includes(term)) ||
         tool.supportedOutputTypes.some((ot) => ot.toLowerCase().includes(term)) ||
         (tool.hub && tool.hub.toLowerCase().includes(term)) ||

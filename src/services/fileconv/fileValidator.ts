@@ -21,64 +21,133 @@ export const FileValidator = {
   },
 
   sanitizeSvgText: (svgText: string): string => {
+    if (!svgText || typeof svgText !== 'string') return '';
+
     if (typeof DOMParser === 'undefined') {
-      // Fallback regex sanitization for Node test environment
+      // Robust regex sanitization fallback for non-DOM / test environments
       return svgText
         .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-        .replace(/\son\w+="[^"]*"/gi, '')
-        .replace(/\son\w+='[^']*'/gi, '');
+        .replace(/<(?:foreignObject|iframe|object|embed)\b[^<]*(?:(?!<\/(?:foreignObject|iframe|object|embed)>)<[^<]*)*<\/(?:foreignObject|iframe|object|embed)>/gi, '')
+        .replace(/<(?:foreignObject|iframe|object|embed)\b[^>]*\/?>/gi, '')
+        .replace(/\son[a-zA-Z]+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '')
+        .replace(/(?:href|xlink:href|src)\s*=\s*(?:'javascript:[^']*'|"javascript:[^"]*"|javascript:[^\s>]+)/gi, 'href="#"')
+        .replace(/(?:href|xlink:href|src)\s*=\s*(?:'data:text\/html[^']*'|"data:text\/html[^"]*"|data:text\/html[^\s>]+)/gi, 'href="#"');
     }
 
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(svgText, 'image/svg+xml');
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(svgText, 'image/svg+xml');
 
-    // Remove script tags and foreignObject
-    const scripts = doc.querySelectorAll('script, foreignObject, iframe, object, embed');
-    scripts.forEach((el) => el.remove());
+      // Remove script tags, foreignObject, iframe, object, embed
+      const unsafeElements = doc.querySelectorAll('script, foreignObject, iframe, object, embed');
+      unsafeElements.forEach((el) => el.remove());
 
-    // Remove event handlers and javascript: URIs
-    const allElements = doc.querySelectorAll('*');
-    allElements.forEach((el) => {
-      for (const attr of Array.from(el.attributes)) {
-        const name = attr.name.toLowerCase();
-        const val = attr.value.toLowerCase();
-        if (name.startsWith('on') || val.includes('javascript:') || val.includes('data:text/html')) {
-          el.removeAttribute(attr.name);
+      // Remove event handlers and dangerous protocol URIs
+      const allElements = doc.querySelectorAll('*');
+      allElements.forEach((el) => {
+        for (const attr of Array.from(el.attributes)) {
+          const name = attr.name.toLowerCase();
+          const val = attr.value.trim().toLowerCase().replace(/[\x00-\x20\s]/g, '');
+          if (
+            name.startsWith('on') ||
+            val.startsWith('javascript:') ||
+            val.startsWith('vbscript:') ||
+            val.startsWith('data:text/html')
+          ) {
+            el.removeAttribute(attr.name);
+          }
         }
-      }
-    });
+      });
 
-    const serializer = new XMLSerializer();
-    return serializer.serializeToString(doc);
+      const serializer = new XMLSerializer();
+      return serializer.serializeToString(doc);
+    } catch {
+      // Fallback if XML parsing encounters fatal syntax error
+      return svgText
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/\son[a-zA-Z]+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '');
+    }
   },
 
   sanitizeHtmlText: (htmlText: string): string => {
+    if (!htmlText || typeof htmlText !== 'string') return '';
+
     if (typeof DOMParser === 'undefined') {
       return htmlText
         .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
         .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
-        .replace(/\son\w+="[^"]*"/gi, '')
-        .replace(/\son\w+='[^']*'/gi, '');
+        .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+        .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, '')
+        .replace(/<(?:meta|base|form|foreignObject)\b[^>]*\/?>/gi, '')
+        .replace(/\son[a-zA-Z]+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '')
+        .replace(/href\s*=\s*(?:'javascript:[^']*'|"javascript:[^"]*"|javascript:[^\s>]+)/gi, 'href="#"')
+        .replace(/href\s*=\s*(?:'data:text\/html[^']*'|"data:text\/html[^"]*"|data:text\/html[^\s>]+)/gi, 'href="#"');
     }
 
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlText, 'text/html');
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlText, 'text/html');
 
-    const unsafeElements = doc.querySelectorAll('script, iframe, object, embed, foreignObject');
-    unsafeElements.forEach((el) => el.remove());
+      // Strip dangerous tags completely
+      const unsafeElements = doc.querySelectorAll(
+        'script, iframe, object, embed, foreignObject, meta, base, form, applet, link[rel="import"]'
+      );
+      unsafeElements.forEach((el) => el.remove());
 
-    const allElements = doc.querySelectorAll('*');
-    allElements.forEach((el) => {
-      for (const attr of Array.from(el.attributes)) {
-        const name = attr.name.toLowerCase();
-        const val = attr.value.toLowerCase();
-        if (name.startsWith('on') || val.includes('javascript:') || val.includes('data:text/html')) {
-          el.removeAttribute(attr.name);
+      const allElements = doc.querySelectorAll('*');
+      allElements.forEach((el) => {
+        // Strip event handlers and script protocols
+        for (const attr of Array.from(el.attributes)) {
+          const name = attr.name.toLowerCase();
+          const val = attr.value.trim().toLowerCase().replace(/[\x00-\x20\s]/g, '');
+          if (
+            name.startsWith('on') ||
+            val.startsWith('javascript:') ||
+            val.startsWith('vbscript:') ||
+            val.startsWith('data:text/html')
+          ) {
+            el.removeAttribute(attr.name);
+          }
         }
-      }
-    });
 
-    return doc.body ? doc.body.innerHTML : htmlText;
+        // Validate links
+        if (el.tagName === 'A') {
+          const href = el.getAttribute('href');
+          if (href) {
+            const cleanedHref = href.trim().toLowerCase().replace(/[\x00-\x20\s]/g, '');
+            if (
+              cleanedHref.startsWith('javascript:') ||
+              cleanedHref.startsWith('vbscript:') ||
+              cleanedHref.startsWith('data:') ||
+              cleanedHref.startsWith('file:')
+            ) {
+              el.setAttribute('href', '#');
+            }
+          }
+        }
+
+        // Validate image sources
+        if (el.tagName === 'IMG') {
+          const src = el.getAttribute('src');
+          if (src) {
+            const cleanedSrc = src.trim().toLowerCase().replace(/[\x00-\x20\s]/g, '');
+            if (
+              cleanedSrc.startsWith('javascript:') ||
+              cleanedSrc.startsWith('vbscript:') ||
+              (cleanedSrc.startsWith('data:') && !cleanedSrc.startsWith('data:image/'))
+            ) {
+              el.removeAttribute('src');
+            }
+          }
+        }
+      });
+
+      return doc.body ? doc.body.innerHTML : htmlText;
+    } catch {
+      return htmlText
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/\son[a-zA-Z]+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '');
+    }
   },
 
   checkArchiveEntryPath: (entryPath: string): boolean => {

@@ -586,6 +586,8 @@ export const WebBoilerplateTool: React.FC<{ defaultTab?: 'html' | 'robots' | 'si
                 title="Live HTML5 Sandbox Preview"
                 srcDoc={generatedCode}
                 sandbox="allow-scripts"
+                referrerPolicy="no-referrer"
+                loading="lazy"
                 className="w-full h-full border-0"
               />
             </div>

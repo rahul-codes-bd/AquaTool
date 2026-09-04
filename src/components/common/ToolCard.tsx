@@ -9,6 +9,7 @@ interface ToolCardProps {
   isFavorite?: boolean;
   onToggleFavorite?: (slug: string) => void;
   onSelectTool: (slug: string) => void;
+  onTagClick?: (tag: string) => void;
 }
 
 export const ToolCard: React.FC<ToolCardProps> = ({
@@ -16,6 +17,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({
   isFavorite = false,
   onToggleFavorite,
   onSelectTool,
+  onTagClick,
 }) => {
   return (
     <div
@@ -83,8 +85,31 @@ export const ToolCard: React.FC<ToolCardProps> = ({
             </span>
           )}
           {tool.tags.slice(0, 2).map((tag) => (
-            <span key={tag} className="text-[10px] px-2 py-0.5 bg-white/5 rounded text-slate-400 border border-white/5">
-              {tag}
+            <span
+              key={tag}
+              onClick={(e) => {
+                if (onTagClick) {
+                  e.stopPropagation();
+                  onTagClick(tag);
+                }
+              }}
+              role={onTagClick ? 'button' : undefined}
+              tabIndex={onTagClick ? 0 : undefined}
+              onKeyDown={(e) => {
+                if (onTagClick && (e.key === 'Enter' || e.key === ' ')) {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onTagClick(tag);
+                }
+              }}
+              className={`text-[10px] px-2 py-0.5 rounded border border-white/5 ${
+                onTagClick
+                  ? 'bg-white/5 hover:bg-cyan-500/15 hover:text-cyan-300 hover:border-cyan-500/30 text-slate-400 cursor-pointer transition-colors'
+                  : 'bg-white/5 text-slate-400'
+              }`}
+              title={onTagClick ? `Filter by tag: ${tag}` : undefined}
+            >
+              #{tag}
             </span>
           ))}
         </div>

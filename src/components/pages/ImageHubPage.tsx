@@ -54,10 +54,10 @@ export const ImageHubPage: React.FC<ImageHubPageProps> = ({
 
       // Search query
       if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase().trim();
+        const q = searchQuery.toLowerCase().trim().replace(/^[#\s]+/, '');
         const matchesTitle = tool.title.toLowerCase().includes(q);
         const matchesDesc = tool.shortDescription.toLowerCase().includes(q);
-        const matchesTags = tool.tags.some((t) => t.toLowerCase().includes(q));
+        const matchesTags = tool.tags.some((t) => t.toLowerCase().replace(/^#/, '').includes(q));
         const matchesCat = tool.category.toLowerCase().includes(q);
         if (!matchesTitle && !matchesDesc && !matchesTags && !matchesCat) {
           return false;
@@ -378,12 +378,19 @@ export const ImageHubPage: React.FC<ImageHubPageProps> = ({
                     {tool.tags && tool.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {tool.tags.slice(0, 3).map((tag, idx) => (
-                          <span
+                          <button
                             key={idx}
-                            className="text-[10px] px-2 py-0.5 rounded-md bg-white/[0.03] text-slate-400 border border-white/5"
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSearchQuery(tag);
+                              onSelectCategory('all');
+                            }}
+                            className="text-[10px] px-2 py-0.5 rounded-md bg-white/[0.03] hover:bg-cyan-500/15 hover:text-cyan-300 text-slate-400 border border-white/5 transition-colors cursor-pointer"
+                            title={`Search by tag #${tag}`}
                           >
                             #{tag}
-                          </span>
+                          </button>
                         ))}
                       </div>
                     )}

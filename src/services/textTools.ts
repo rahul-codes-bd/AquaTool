@@ -1,4 +1,5 @@
 import * as Diff from 'diff';
+import { FileValidator } from './fileconv/fileValidator';
 
 export interface XmlValidationResult {
   isValid: boolean;
@@ -470,7 +471,8 @@ export class TextTools {
     // Step 12: Paragraphs / breaks
     clean = clean.replace(/\n\n/g, '<br class="my-2" />');
 
-    return clean;
+    // Step 13: Strict XSS sanitization (removes scripts, iframes, on* handlers, dangerous protocols)
+    return FileValidator.sanitizeHtmlText(clean);
   }
 
   // --- Base64 & URL ---
