@@ -1,19 +1,19 @@
 # AquaTools 🌊
 
-**AquaTools** is a high-speed, privacy-first, client-side suite of document, image, developer, design, and web configuration utilities. 
+**AquaTools** is a high-speed, privacy-first, 100% client-side suite of document, image, developer, design, and file utilities.
 
-Every tool executes **100% inside your local web browser** using modern Web APIs (Web Crypto, HTML5 Canvas, WebAssembly, PDF-Lib, JSZip, PapaParse). Your files, documents, passwords, and private data **never leave your device**.
+Every tool executes **entirely inside your local web browser** using modern Web Standards (Web Crypto, HTML5 Canvas, PDF-Lib, Mozilla PDF.js, JSZip). Your files, documents, passwords, and private data **never leave your device**.
 
 ---
 
-## 🛡️ Privacy Model & Zero-Upload Guarantee
+## 🛡️ Privacy Model & Verified Zero-Upload Guarantee
 
-Unlike traditional online converter services that transmit confidential PDFs, contracts, employee records, and proprietary images to remote servers, **AquaTools operates under a zero-cloud-dependency model**:
+Unlike traditional online converter services that upload your confidential PDFs, contracts, employee records, and photos to remote servers, **AquaTools operates under a strict zero-cloud architecture**:
 
-1. **Zero Server Uploads**: No backend server receives or processes your files. Payloads are read directly into browser memory (RAM) via the HTML5 `FileReader` and `Blob` APIs.
-2. **Zero Telemetry & Tracking**: Zero analytics trackers (no Google Analytics, no Facebook Pixels, no Hotjar, no telemetry beacons).
-3. **No Login Required**: No accounts, passwords, or personal identity collection.
-4. **Offline Ready**: Once loaded, all conversion algorithms, cryptographic hash generators, and formatters function seamlessly in complete isolation (e.g., in Airplane Mode).
+1. **Zero Server Uploads**: No backend server receives or processes your files. Payloads are read directly into browser memory (RAM) via standard HTML5 `FileReader` and `Blob` APIs.
+2. **Zero Telemetry & Tracking**: No analytics trackers, no advertising beacons, no third-party cookies, and no telemetry pings.
+3. **No Login Required**: No accounts, authentication tokens, or personal identity collection.
+4. **100% Self-Hosted & Offline Ready**: All PDF rendering engines, Mozilla PDF.js workers, CMap character maps, and standard fonts are self-hosted within the application package (`/public/pdfjs/`). Once cached by the PWA Service Worker, all conversions run seamlessly in complete physical network isolation (e.g., Airplane Mode).
 
 ---
 
@@ -23,11 +23,11 @@ Unlike traditional online converter services that transmit confidential PDFs, co
 All random tokens, UUID v4 identifiers, Diceware passphrases, and numeric PINs are generated exclusively using `window.crypto.getRandomValues()` and `window.crypto.subtle`. This guarantees true operating-system-level cryptographic entropy with rejection sampling.
 
 ### 2. Sandbox Isolation & XSS Defense
-- **Interactive HTML & Code Previews**: Rendered inside isolated sandboxed `<iframe>` instances with `sandbox="allow-scripts"` (strictly omitting `allow-same-origin` and `allow-top-navigation`). This ensures untrusted scripts cannot access the parent page's DOM, cookies, or storage.
+- **Interactive HTML & Code Previews**: Rendered inside isolated sandboxed `<iframe>` instances with `sandbox="allow-scripts"` (strictly omitting `allow-same-origin` and `allow-top-navigation`). This ensures untrusted user scripts cannot access the parent page's DOM, cookies, or storage.
 - **SVG & Markdown Previews**: Sanitized against malicious inline event handlers (`onload`, `onerror`), script tags, and `javascript:` URIs prior to DOM rendering.
 
 ### 3. Proactive Memory Cleanup & URL Revocation
-To prevent confidential data lingering in browser memory, all temporary Object URLs (`blob:https://...`) are explicitly revoked via `URL.revokeObjectURL()` immediately when files are closed, converted, or reset.
+To prevent confidential data lingering in browser memory, all temporary Object URLs (`blob:...`) are explicitly revoked via `URL.revokeObjectURL()` immediately when files are closed, converted, or reset.
 
 ### 4. Local Storage Policy
 AquaTools stores **only** user-selected UI preferences in browser `localStorage`:
@@ -38,24 +38,13 @@ AquaTools stores **only** user-selected UI preferences in browser `localStorage`
 
 **Confirmed: 0 Bytes of file payloads, document contents, converted outputs, passwords, or personal data are ever persisted to disk or storage.**
 
-Users can view and audit all storage keys or perform an immediate full purge via the built-in **Storage Audit & Data Purge** tool in the [Settings](#settings) page.
-
----
-
-## 🧪 How to Verify Zero Uploads in DevTools
-
-You do not need to trust claims blindly. You can verify privacy in real-time:
-
-1. Press `F12` (or right-click and select **Inspect**) to open browser Developer Tools.
-2. Select the **Network** tab and toggle the **Fetch/XHR** filter.
-3. Drop any PDF, image, CSV, or text file into any AquaTools tool and click **Convert**.
-4. Observe that **0 network requests** are sent. All computation occurs locally on your machine.
+Users can view and audit all storage keys or perform an immediate full purge via the built-in **Storage Audit & Data Purge** tool in the Settings page.
 
 ---
 
 ## 🧰 Available Tool Suite
 
-### 🔄 Converters
+### 🔄 Converters & Media
 - **Image Converter**: Lossless PNG, JPEG, WebP, AVIF, BMP conversion with quality sliders and batch ZIP export.
 - **Color Converter**: HEX, RGB, RGBA, HSL, HSLA, HSV, CMYK conversion with WCAG AA/AAA contrast analyzer.
 - **Timestamp & Date Converter**: Unix epoch seconds/milliseconds to human-readable ISO-8601, UTC, and relative dates.
@@ -73,7 +62,7 @@ You do not need to trust claims blindly. You can verify privacy in real-time:
 - **Interactive Form Filling & Creation**: Fill AcroForm text fields/checkboxes or design new interactive forms from scratch.
 - **N-Up Multi-Page Compositing**: Fit 2, 4, 6, 9, or 16 pages per printable sheet for booklets, index cards, and paper savings.
 - **Halve 2-Page Spreads**: Split scanned book spreads or dual-page layouts into individual portrait pages.
-- **PDF Overlay & Letterhead**: Superimpose stationary templates, letterheads, or background stamps onto target documents.
+- **PDF Overlay & Letterhead**: Superimpose stationery templates, letterheads, or background stamps onto target documents.
 - **PDF Visual Comparator & Diff**: Pixel-level visual diff with split curtain slider and difference highlights.
 - **Bookmarks & Table of Contents**: Build interactive navigation outlines and auto-prepend a formatted Table of Contents.
 - **PDF Merge & Split**: Combine multiple documents or extract custom page ranges (e.g., `1-3, 5, 8-10`) with ZIP export.
@@ -82,8 +71,7 @@ You do not need to trust claims blindly. You can verify privacy in real-time:
 - **Crop Margins & Pagination**: Trim white borders and stamp customizable page numbers with dynamic format templates.
 - **Protect & Unlock PDF**: Web Crypto 128-bit encryption with permission flags and authorized password removal.
 - **Sanitize & Edit Metadata**: Strip hidden author tags, producer software signatures, and edit title/subject tags.
-- **PDF OCR & Text Layer Extractor**: Client-side text layer inspection with a zero-upload WASM roadmap for searchable OCR.
-- **Office Converters (Word / Excel / PowerPoint)**: 100% private offline workflows and WebAssembly sandboxing roadmap.
+- **Office Document Guides**: Explicit guidance and native 100% private offline workflows (Print to PDF / Save As) for proprietary Office files, avoiding insecure cloud upload traps.
 
 ### 🛠️ Developer Tools
 - **Code Formatter & Minifier**: Beautify and compress JSON, HTML, CSS, JavaScript, and SQL.
@@ -104,30 +92,62 @@ You do not need to trust claims blindly. You can verify privacy in real-time:
 
 ---
 
-## 🌐 Browser Compatibility Matrix
+## 🌐 Browser Compatibility & Resource Limitations
 
 | Browser | Minimum Version | Status |
 | :--- | :--- | :--- |
-| **Google Chrome** | v80+ | ✅ Fully Supported |
+| **Google Chrome / Chromium** | v88+ | ✅ Fully Supported (PWA Installable) |
 | **Apple Safari** | v14.1+ | ✅ Fully Supported |
 | **Mozilla Firefox** | v78+ | ✅ Fully Supported |
-| **Microsoft Edge** | v80+ | ✅ Fully Supported |
-| **iOS Safari** | iOS 14.5+ | ✅ Fully Supported |
-| **Android Chrome** | v80+ | ✅ Fully Supported |
+| **Microsoft Edge** | v88+ | ✅ Fully Supported |
+| **iOS Safari** | iOS 15+ | ✅ Fully Supported |
+| **Android Chrome** | v88+ | ✅ Fully Supported |
+
+### Memory & File Size Guidelines
+Because all operations take place in client-side RAM without server clusters:
+- **Recommended PDF size**: Up to 50MB (documents with 200+ pages may require 2-4 GB of browser RAM).
+- **Recommended Image size**: Up to 35MB per file (batch up to 50 files).
+- **Mobile Devices**: Large batch conversions may be constrained by mobile OS tab memory caps (iOS WebKit ~1.5 GB ceiling).
 
 ---
 
-## 💻 Tech Stack & Open Source Credits
+## 💻 Tech Stack & Dependencies
 
-- **Framework**: React 18 with TypeScript & Vite
-- **Styling**: Tailwind CSS with custom glassmorphism and ambient water caustics
-- **PDF Engine**: [pdf-lib](https://pdf-lib.js.org/) & [PDF.js](https://mozilla.github.io/pdf.js/)
-- **Compression & Archives**: [JSZip](https://stuk.github.io/jszip/)
-- **CSV Engine**: [PapaParse](https://www.papaparse.com/)
+- **Framework**: [React 19](https://react.dev/) (`^19.0.1`) with [TypeScript](https://www.typescriptlang.org/) & [Vite 6](https://vite.dev/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **PDF Engines**: [pdf-lib](https://pdf-lib.js.org/) & [pdfjs-dist](https://mozilla.github.io/pdf.js/) (100% self-hosted worker, CMaps, and fonts)
+- **Archives & Compaction**: [JSZip](https://stuk.github.io/jszip/)
+- **Text Diff Engine**: [diff](https://github.com/kpdecker/jsdiff)
+- **Barcode & 2D Matrix**: [qrcode](https://github.com/soldair/node-qrcode)
+- **Animation & Motion**: [motion](https://motion.dev/)
 - **Icons**: [Lucide React](https://lucide.dev/)
-- **Cryptography**: Native W3C Web Crypto API (`crypto.getRandomValues`, `crypto.subtle`)
+- **Cryptography**: Native W3C Web Crypto API (`window.crypto.getRandomValues`, `window.crypto.subtle`)
+
+---
+
+## 🚀 Development & Verification Commands
+
+```bash
+# Install dependencies using standardized npm
+npm install
+
+# Run development server (binds to 0.0.0.0:3000)
+npm run dev
+
+# Run full test suite (169+ unit tests)
+npm test
+
+# Build for production with manual chunk code-splitting
+npm run build
+
+# Validate PWA manifest and self-hosted asset integrity
+npm run validate:pwa
+
+# Complete CI pipeline check
+npm run ci
+```
 
 ---
 
 ## 📄 License
-MIT License. Built for privacy, speed, and developer empowerment.
+MIT License. Built for speed, privacy, and client-side engineering excellence.

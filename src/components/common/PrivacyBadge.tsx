@@ -20,7 +20,7 @@ export const PrivacyBadge: React.FC<PrivacyBadgeProps> = ({ customText, classNam
         onFocus={() => setShowTooltip(true)}
         onBlur={() => setShowTooltip(false)}
         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-cyan-400/10 text-cyan-400 border border-cyan-400/20 hover:bg-cyan-400/20 transition-all backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
-        aria-label="Privacy information: 100% local processing"
+        aria-label="Privacy information: Local browser processing"
       >
         <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />
         <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />

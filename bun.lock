@@ -19,7 +19,6 @@
         "qrcode": "^1.5.4",
         "react": "^19.0.1",
         "react-dom": "^19.0.1",
-        "vite": "^6.2.3",
       },
       "devDependencies": {
         "@types/diff": "^8.0.0",

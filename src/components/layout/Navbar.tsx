@@ -63,7 +63,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
               {APP_CONFIG.name}
               <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
-                100% Local
+                Client-Side
               </span>
             </span>
           </div>

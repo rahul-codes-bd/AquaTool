@@ -248,8 +248,14 @@ export class PdfCrypt {
    */
   public static async isPdfEncrypted(buffer: ArrayBuffer): Promise<boolean> {
     try {
+      if (typeof window !== 'undefined' && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdfjs/pdf.worker.min.mjs';
+      }
       const loadingTask = pdfjsLib.getDocument({
         data: new Uint8Array(buffer),
+        cMapUrl: '/pdfjs/cmaps/',
+        cMapPacked: true,
+        standardFontDataUrl: '/pdfjs/standard_fonts/',
         enableScripting: false,
         isEvalSupported: false,
       } as any);
@@ -299,6 +305,9 @@ export class PdfCrypt {
       const loadingTask = pdfjsLib.getDocument({
         data: uint8,
         password: password,
+        cMapUrl: '/pdfjs/cmaps/',
+        cMapPacked: true,
+        standardFontDataUrl: '/pdfjs/standard_fonts/',
         enableScripting: false,
         isEvalSupported: false,
       } as any);

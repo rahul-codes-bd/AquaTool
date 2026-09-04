@@ -1,20 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { WaterBackground } from './components/layout/WaterBackground';
 import { HomePage } from './components/pages/HomePage';
-import { ToolRunnerPage } from './components/pages/ToolRunnerPage';
-import { PdfHubPage } from './components/pages/PdfHubPage';
-import { PdfToolRunnerPage } from './components/pages/PdfToolRunnerPage';
-import { ImageHubPage } from './components/pages/ImageHubPage';
-import { ImageToolRunnerPage } from './components/pages/ImageToolRunnerPage';
-import { PrivacyPage } from './components/pages/PrivacyPage';
-import { SecurityPage } from './components/pages/SecurityPage';
-import { AboutPage } from './components/pages/AboutPage';
-import { ContactPage } from './components/pages/ContactPage';
-import { SettingsPage } from './components/pages/SettingsPage';
-import { TermsPage } from './components/pages/TermsPage';
-import { NotFoundPage } from './components/pages/NotFoundPage';
 import { ToastContainer } from './components/common/Toast';
 import { AdSlotPlaceholder } from './components/common/AdSlotPlaceholder';
 import { StorageService } from './services/storage';
@@ -22,13 +10,34 @@ import { ALL_TOOLS, getToolBySlug } from './registry/toolsRegistry';
 import { PDF_CATEGORIES, getPdfToolBySlug } from './registry/pdfRegistry';
 import { IMAGE_CATEGORIES, getImageToolBySlug, IMAGE_TOOLS } from './registry/imageRegistry';
 import { getFileConvToolBySlug } from './registry/fileConvRegistry';
-import { FileConvHubPage } from './components/fileconv/FileConvHubPage';
-import { FileConvRunnerPage } from './components/fileconv/FileConvRunnerPage';
 import { ToolCategory, ToastMessage } from './types';
 import { PdfToolCategory } from './types/pdf';
 import { ImageToolCategory } from './types/image';
 import { APP_CONFIG } from './config/appConfig';
 import { t } from './i18n';
+
+// Route-level dynamic code splitting for sub-pages & heavy execution runners
+const ToolRunnerPage = lazy(() => import('./components/pages/ToolRunnerPage').then(m => ({ default: m.ToolRunnerPage })));
+const PdfHubPage = lazy(() => import('./components/pages/PdfHubPage').then(m => ({ default: m.PdfHubPage })));
+const PdfToolRunnerPage = lazy(() => import('./components/pages/PdfToolRunnerPage').then(m => ({ default: m.PdfToolRunnerPage })));
+const ImageHubPage = lazy(() => import('./components/pages/ImageHubPage').then(m => ({ default: m.ImageHubPage })));
+const ImageToolRunnerPage = lazy(() => import('./components/pages/ImageToolRunnerPage').then(m => ({ default: m.ImageToolRunnerPage })));
+const FileConvHubPage = lazy(() => import('./components/fileconv/FileConvHubPage').then(m => ({ default: m.FileConvHubPage })));
+const FileConvRunnerPage = lazy(() => import('./components/fileconv/FileConvRunnerPage').then(m => ({ default: m.FileConvRunnerPage })));
+const PrivacyPage = lazy(() => import('./components/pages/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
+const SecurityPage = lazy(() => import('./components/pages/SecurityPage').then(m => ({ default: m.SecurityPage })));
+const AboutPage = lazy(() => import('./components/pages/AboutPage').then(m => ({ default: m.AboutPage })));
+const ContactPage = lazy(() => import('./components/pages/ContactPage').then(m => ({ default: m.ContactPage })));
+const SettingsPage = lazy(() => import('./components/pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
+const TermsPage = lazy(() => import('./components/pages/TermsPage').then(m => ({ default: m.TermsPage })));
+const NotFoundPage = lazy(() => import('./components/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
+
+const ViewLoadingFallback = () => (
+  <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4" role="status" aria-label="Loading tool workspace">
+    <div className="w-10 h-10 border-3 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin motion-reduce:animate-none" />
+    <span className="text-sm font-medium text-slate-400 tracking-wide">Loading workspace...</span>
+  </div>
+);
 
 export default function App() {
   const [currentView, setCurrentView] = useState<string>('home');
@@ -169,7 +178,7 @@ export default function App() {
         const pdfTool = getPdfToolBySlug(slug);
         const fcTool = getFileConvToolBySlug(slug);
 
-        if (imageTool || (found && found.componentId === 'ImageToolRunner')) {
+        if (imageTool) {
           setActiveImageToolSlug(slug);
           setCurrentView('image-tool');
           setActiveToolSlug(null);
@@ -422,103 +431,105 @@ export default function App() {
         {/* Ad Placeholder (Feature Flag controlled, 0 layout shift) */}
         <AdSlotPlaceholder slotId="top-header-banner" />
 
-        {(currentView === 'home' || currentView === 'all-tools' || currentView === 'favorites') && (
-          <HomePage
-            currentView={currentView}
-            activeCategory={activeCategory}
-            onSelectTool={handleSelectTool}
-            favorites={favorites}
-            recentTools={recentTools}
-            onToggleFavorite={handleToggleFavorite}
-            onClearRecentTools={handleClearRecentTools}
-            onClearFavorites={handleClearFavorites}
-            onNavigate={handleNavigate}
-          />
-        )}
+        <Suspense fallback={<ViewLoadingFallback />}>
+          {(currentView === 'home' || currentView === 'all-tools' || currentView === 'favorites') && (
+            <HomePage
+              currentView={currentView}
+              activeCategory={activeCategory}
+              onSelectTool={handleSelectTool}
+              favorites={favorites}
+              recentTools={recentTools}
+              onToggleFavorite={handleToggleFavorite}
+              onClearRecentTools={handleClearRecentTools}
+              onClearFavorites={handleClearFavorites}
+              onNavigate={handleNavigate}
+            />
+          )}
 
-        {(currentView === 'images' || currentView === 'image-hub') && (
-          <ImageHubPage
-            activeCategory={activeImageCategory}
-            onSelectCategory={handleSelectImageCategory}
-            onSelectImageTool={handleSelectImageTool}
-            onNavigateHome={() => handleNavigate('home')}
-          />
-        )}
+          {(currentView === 'images' || currentView === 'image-hub') && (
+            <ImageHubPage
+              activeCategory={activeImageCategory}
+              onSelectCategory={handleSelectImageCategory}
+              onSelectImageTool={handleSelectImageTool}
+              onNavigateHome={() => handleNavigate('home')}
+            />
+          )}
 
-        {currentView === 'image-tool' && activeImageTool && (
-          <ImageToolRunnerPage
-            tool={activeImageTool}
-            initialFiles={imageInitialFiles}
-            onBack={() => {
-              setImageInitialFiles([]);
-              handleNavigate('images');
-            }}
-            onSelectOtherTool={handleSelectImageTool}
-          />
-        )}
+          {currentView === 'image-tool' && activeImageTool && (
+            <ImageToolRunnerPage
+              tool={activeImageTool}
+              initialFiles={imageInitialFiles}
+              onBack={() => {
+                setImageInitialFiles([]);
+                handleNavigate('images');
+              }}
+              onSelectOtherTool={handleSelectImageTool}
+            />
+          )}
 
-        {(currentView === 'pdf' || currentView === 'pdf-hub') && (
-          <PdfHubPage
-            activeCategory={activePdfCategory}
-            onSelectCategory={handleSelectPdfCategory}
-            onSelectPdfTool={handleSelectPdfTool}
-            onNavigateHome={() => handleNavigate('home')}
-          />
-        )}
+          {(currentView === 'pdf' || currentView === 'pdf-hub') && (
+            <PdfHubPage
+              activeCategory={activePdfCategory}
+              onSelectCategory={handleSelectPdfCategory}
+              onSelectPdfTool={handleSelectPdfTool}
+              onNavigateHome={() => handleNavigate('home')}
+            />
+          )}
 
-        {(currentView === 'fileconv' || currentView === 'fileconv-hub') && (
-          <FileConvHubPage onSelectTool={(slug) => handleNavigate('fileconv-tool', undefined, slug)} />
-        )}
+          {(currentView === 'fileconv' || currentView === 'fileconv-hub') && (
+            <FileConvHubPage onSelectTool={(slug) => handleNavigate('fileconv-tool', undefined, slug)} />
+          )}
 
-        {currentView === 'fileconv-tool' && activeFileConvTool && (
-          <FileConvRunnerPage tool={activeFileConvTool} onBack={() => handleNavigate('fileconv')} />
-        )}
+          {currentView === 'fileconv-tool' && activeFileConvTool && (
+            <FileConvRunnerPage tool={activeFileConvTool} onBack={() => handleNavigate('fileconv')} />
+          )}
 
-        {currentView === 'pdf-tool' && activePdfTool && (
-          <PdfToolRunnerPage
-            tool={activePdfTool}
-            isFavorite={favorites.includes(activePdfTool.slug)}
-            onToggleFavorite={handleToggleFavorite}
-            onNavigateHub={() => handleNavigate('pdf')}
-            onSelectTool={handleSelectPdfTool}
-          />
-        )}
+          {currentView === 'pdf-tool' && activePdfTool && (
+            <PdfToolRunnerPage
+              tool={activePdfTool}
+              isFavorite={favorites.includes(activePdfTool.slug)}
+              onToggleFavorite={handleToggleFavorite}
+              onNavigateHub={() => handleNavigate('pdf')}
+              onSelectTool={handleSelectPdfTool}
+            />
+          )}
 
-        {currentView === 'tool' && activeTool && (
-          <ToolRunnerPage
-            tool={activeTool}
-            isFavorite={favorites.includes(activeTool.slug)}
-            onToggleFavorite={handleToggleFavorite}
-            onNavigateHome={() => handleNavigate('home')}
-            onSelectTool={handleSelectTool}
-          />
-        )}
+          {currentView === 'tool' && activeTool && (
+            <ToolRunnerPage
+              tool={activeTool}
+              isFavorite={favorites.includes(activeTool.slug)}
+              onToggleFavorite={handleToggleFavorite}
+              onNavigateHome={() => handleNavigate('home')}
+              onSelectTool={handleSelectTool}
+            />
+          )}
 
-        {currentView === 'privacy' && <PrivacyPage />}
+          {currentView === 'privacy' && <PrivacyPage />}
 
-        {currentView === 'security' && <SecurityPage />}
+          {currentView === 'security' && <SecurityPage />}
 
-        {currentView === 'about' && <AboutPage />}
+          {currentView === 'about' && <AboutPage />}
 
-        {currentView === 'contact' && <ContactPage />}
+          {currentView === 'contact' && <ContactPage />}
 
-        {currentView === 'terms' && <TermsPage onNavigate={handleNavigate} />}
+          {currentView === 'terms' && <TermsPage onNavigate={handleNavigate} />}
 
-        {currentView === 'settings' && (
-          <SettingsPage
-            theme={theme}
-            onThemeChange={handleThemeChange}
-            onClearAllData={handleClearAllData}
-          />
-        )}
+          {currentView === 'settings' && (
+            <SettingsPage
+              theme={theme}
+              onThemeChange={handleThemeChange}
+              onClearAllData={handleClearAllData}
+            />
+          )}
 
-        {currentView === '404' && (
-          <NotFoundPage
-            attemptedRoute={attemptedRoute}
-            onNavigate={handleNavigate}
-            onSelectTool={handleSelectTool}
-          />
-        )}
+          {currentView === '404' && (
+            <NotFoundPage
+              attemptedRoute={attemptedRoute}
+              onNavigate={handleNavigate}
+              onSelectTool={handleSelectTool}
+            />
+          )}
+        </Suspense>
 
         {/* Bottom Ad Placeholder */}
         <AdSlotPlaceholder slotId="bottom-footer-banner" />

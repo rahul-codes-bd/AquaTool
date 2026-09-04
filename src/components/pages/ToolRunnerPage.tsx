@@ -77,7 +77,7 @@ export const ToolRunnerPage: React.FC<ToolRunnerPageProps> = ({
 }) => {
   // Update document title for this specific tool
   useEffect(() => {
-    document.title = `${tool.name} | AquaTools - 100% Private Browser Utility`;
+    document.title = `${tool.name} | AquaTools - Private In-Browser Utility`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [tool]);
 
@@ -275,15 +275,51 @@ export const ToolRunnerPage: React.FC<ToolRunnerPageProps> = ({
         return <WebBoilerplateTool defaultTab="og" />;
       case 'file-info':
         return <FileInfoTool />;
+      case 'svg-converter':
+        return <ImageConverterTool />;
+      case 'base64-converter':
+        return <Base64Tool />;
+      case 'heic-to-jpg':
+        return (
+          <ComingSoonTool
+            title={tool.name}
+            category="Client-Side WebAssembly Roadmap"
+            description={tool.description}
+            onNavigateHub={onNavigateHome}
+          />
+        );
+      case 'background-remover':
+        return (
+          <ComingSoonTool
+            title={tool.name}
+            category="WebGPU In-Browser Engine Roadmap"
+            description={tool.description}
+            onNavigateHub={onNavigateHome}
+          />
+        );
+      case 'extract-text-ocr':
+        return <PdfOcrTool />;
+      case 'enhance-document-scan':
+        return (
+          <ComingSoonTool
+            title={tool.name}
+            category="Canvas Binarization Engine Roadmap"
+            description={tool.description}
+            onNavigateHub={onNavigateHome}
+          />
+        );
       default: {
         const imageToolDef = getImageToolBySlug(tool.slug);
         if (imageToolDef) {
           return <ImageToolRunnerPage tool={imageToolDef} onBack={onNavigateHome} />;
         }
         return (
-          <div className="glass-panel p-8 text-center rounded-2xl text-slate-400">
-            Tool runner is loading...
-          </div>
+          <ComingSoonTool
+            title={tool.name}
+            category={tool.category}
+            description={tool.description}
+            onNavigateHub={onNavigateHome}
+          />
         );
       }
     }
@@ -335,7 +371,7 @@ export const ToolRunnerPage: React.FC<ToolRunnerPageProps> = ({
                   {tool.name}
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                  100% Client-Side
+                  Local Browser Execution
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">

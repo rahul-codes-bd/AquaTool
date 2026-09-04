@@ -144,8 +144,12 @@ export class StorageService {
       Object.values(APP_CONFIG.STORAGE_KEYS).forEach((key) => {
         localStorage.removeItem(key);
       });
-      localStorage.clear();
-      sessionStorage.clear();
+      if (typeof localStorage !== 'undefined') {
+        localStorage.clear();
+      }
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.clear();
+      }
     } catch (e) {
       console.error('Failed to clear storage:', e);
     }

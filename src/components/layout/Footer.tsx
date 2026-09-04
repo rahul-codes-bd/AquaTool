@@ -56,7 +56,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onClearAllData }) =>
                   className="text-cyan-400 font-semibold hover:text-cyan-300 transition-colors flex items-center gap-1"
                 >
                   <span>PDF Suite (80+ Tools)</span>
-                  <span className="text-[9px] px-1 py-0.2 rounded bg-cyan-500/20 text-cyan-300 font-mono">100% Local</span>
+                  <span className="text-[9px] px-1 py-0.2 rounded bg-cyan-500/20 text-cyan-300 font-mono">Client-Side</span>
                 </button>
               </li>
             </ul>

@@ -229,7 +229,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         {/* Zero Upload Guarantee Pill */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 text-xs font-medium shadow-[0_0_20px_rgba(6,182,212,0.15)]">
           <ShieldCheck className="w-4 h-4 text-cyan-400" />
-          <span>Zero Server Uploads • 100% In-Browser Local Execution</span>
+          <span>Zero Server Uploads • In-Browser Local Execution</span>
         </div>
 
         {/* Dynamic Display Headline */}

@@ -1,11 +1,10 @@
 import * as pdfjsLib from 'pdfjs-dist';
 
-// Configure Mozilla PDF.js worker client-side
+// Configure Mozilla PDF.js worker client-side using self-hosted local worker & assets
 if (typeof window !== 'undefined') {
   try {
-    // Use jsdelivr cdn worker matching the exact pdfjs-dist version, with local fallback
-    const pdfJsVersion = pdfjsLib.version || '4.10.38';
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfJsVersion}/build/pdf.worker.min.mjs`;
+    // Self-hosted local worker ensures 100% offline capability with zero external CDN dependency
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdfjs/pdf.worker.min.mjs';
   } catch (err) {
     console.warn('PDF.js worker initialization warning:', err);
   }
@@ -24,7 +23,7 @@ export class PdfRenderer {
   private static cachedDocMap = new WeakMap<ArrayBuffer, any>();
 
   /**
-   * Loads a PDF Document using PDF.js
+   * Loads a PDF Document using PDF.js with 100% self-hosted assets
    */
   static async loadPdfDocument(data: ArrayBuffer | Uint8Array | Blob | File): Promise<any> {
     let buffer: ArrayBuffer;
@@ -38,9 +37,9 @@ export class PdfRenderer {
 
     const loadingTask = pdfjsLib.getDocument({
       data: new Uint8Array(buffer),
-      cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@' + (pdfjsLib.version || '4.10.38') + '/cmaps/',
+      cMapUrl: '/pdfjs/cmaps/',
       cMapPacked: true,
-      standardFontDataUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@' + (pdfjsLib.version || '4.10.38') + '/standard_fonts/',
+      standardFontDataUrl: '/pdfjs/standard_fonts/',
       enableScripting: false,
       isEvalSupported: false,
     } as any);
