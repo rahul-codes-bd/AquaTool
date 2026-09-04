@@ -148,5 +148,51 @@ AquaTools includes a production SEO system:
 
 ---
 
+## ☁️ Cloudflare Deployment (Free Static Hosting)
+
+AquaTools is designed to deploy seamlessly on **Cloudflare Pages** (recommended) or **Cloudflare Workers (Static Assets)** with zero backend dependencies, zero API costs, and full offline/PWA capabilities.
+
+### Option A: Cloudflare Pages (Recommended Git Integration)
+
+1. **Connect Repository**:
+   - In the [Cloudflare Dashboard](https://dash.cloudflare.com/), navigate to **Compute (Workers & Pages)** > **Create** > **Pages** > **Connect to Git**.
+   - Select your connected GitHub repository (`aquatools`).
+2. **Configure Build Settings**:
+   - **Framework Preset**: `Vite` (or `None`)
+   - **Production Branch**: `main`
+   - **Build Command**: `npm run build`
+   - **Build Output Directory**: `dist`
+   - **Root Directory**: `/` (default)
+3. **Environment Variables**:
+   - **No environment variables are required** for AquaTools to run. The entire tool suite executes 100% locally in client-side RAM.
+   - *Optional*: If you want custom production domain SEO canonicalization in `sitemap.xml` and `robots.txt`, configure `SITE_URL` (or `VITE_SITE_URL`) to your domain (e.g. `https://yourdomain.com`).
+   - ⚠️ **Strict Security Rule**: Never place secret API keys, private credentials, or tokens in frontend environment variables. All variables prefixed with `VITE_` are publicly accessible in client browser bundles.
+4. **SPA & Routing Behavior**:
+   - Cloudflare Pages automatically reads `public/_redirects` (copied to `dist/_redirects`), which routes all path fallbacks (`/* /index.html 200`) to `index.html`.
+   - The application's native hash-based routes (`/#/...`) operate reliably across direct links, page reloads, and browser navigation.
+5. **Security & Cache Headers**:
+   - Cloudflare Pages automatically respects `dist/_headers`, enforcing strict Content Security Policy (`CSP`), HSTS, permission sandboxing, and immutable cache lifetimes for static asset chunks and self-hosted PDF.js workers.
+
+### Option B: Cloudflare Workers Static Assets (CLI Deployment)
+
+AquaTools includes a pre-configured `wrangler.jsonc` file targeting Cloudflare Workers with Static Assets:
+
+```bash
+# 1. Install dependencies
+npm ci
+
+# 2. Build the production bundle into dist/
+npm run build
+
+# 3. Deploy static assets to Cloudflare Workers
+npx wrangler deploy
+```
+
+- **Configuration**: Managed in `wrangler.jsonc`.
+- **Assets Directory**: `./dist`
+- **SPA Fallback**: Configured via `"not_found_handling": "single-page-application"`.
+
+---
+
 ## 📄 License
 MIT License. Built for speed, privacy, and client-side engineering excellence.
