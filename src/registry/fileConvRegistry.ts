@@ -262,7 +262,7 @@ export const FILE_CONVERSION_TOOLS: FileConversionTool[] = [
     processingMode: 'browser',
     status: 'ready',
     maxRecommendedBytes: 100 * 1024 * 1024,
-    privacyNote: '100% privacy-first local workflow orchestration.',
+    privacyNote: 'Privacy-first local workflow orchestration.',
     knownLimitations: ['Designed for client-side multi-file pipelines.'],
     load: async () => Promise.resolve(true),
   },

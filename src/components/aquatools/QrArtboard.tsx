@@ -7,7 +7,7 @@ interface QrArtboardProps {
 }
 
 export const QrArtboard: React.FC<QrArtboardProps> = ({ currentFile }) => {
-  const [text, setText] = useState('https://ai.studio');
+  const [text, setText] = useState('https://aquatools.local');
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
 

@@ -85,7 +85,7 @@ export function OfficeConvertNoticeTool({ format = 'word' }: OfficeConvertNotice
       <div className="space-y-4">
         <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
           <Laptop className="w-4 h-4 text-cyan-400" />
-          <span>100% Private Offline Conversion Methods (Available Right Now)</span>
+          <span>Privacy-Preserving Offline Conversion Methods (Available Right Now)</span>
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

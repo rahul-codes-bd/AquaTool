@@ -6,7 +6,7 @@ import { Link, Shield, AlertCircle, Info, Table } from 'lucide-react';
 import { CopyButton } from '../common/CopyButton';
 
 export const UrlEncoderTool: React.FC = () => {
-  const [inputText, setInputText] = useState('https://aquatools.local/search?query=browser utilities&filter=100% private&category=file tools');
+  const [inputText, setInputText] = useState('https://aquatools.local/search?query=browser utilities&filter=local-only&category=file tools');
   const [componentMode, setComponentMode] = useState(true);
   const [result, setResult] = useState('');
   const [error, setError] = useState<string | null>(null);

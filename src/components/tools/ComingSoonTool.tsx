@@ -11,7 +11,7 @@ interface ComingSoonToolProps {
 export function ComingSoonTool({
   title = 'Advanced PDF Tool',
   category = 'Client-Side WASM Roadmap',
-  description = 'This advanced document utility is currently in active WebAssembly development to guarantee 100% private in-browser execution with zero remote server uploads.',
+  description = 'This advanced document utility is currently in active WebAssembly development for local in-browser execution with zero remote server uploads.',
   onNavigateHub,
 }: ComingSoonToolProps) {
   return (

@@ -463,7 +463,7 @@ const PdfComingSoonRoadmap: React.FC<{
             <span>Why is this tool marked coming-soon?</span>
           </h4>
           <p className="text-slate-300 leading-relaxed text-[11px]">
-            Unlike commercial tools that quietly upload your files to remote third-party cloud servers, AquaTools strictly enforces 100% private in-browser execution. Complex format conversions require standalone WebAssembly engines (e.g. LibreOffice WASM, Tesseract OCR, or HarfBuzz font shaping).
+            Unlike commercial tools that quietly upload your files to remote third-party cloud servers, AquaTools is designed to process supported files locally in your browser without uploading file contents to a backend server. Complex format conversions require standalone WebAssembly engines (e.g. LibreOffice WASM, Tesseract OCR, or HarfBuzz font shaping).
           </p>
         </div>
 

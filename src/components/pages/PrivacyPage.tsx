@@ -26,8 +26,8 @@ export const PrivacyPage: React.FC = () => {
           Privacy Policy & In-Browser Guarantee
         </h1>
         <p className="text-slate-300 text-sm max-w-2xl mx-auto leading-relaxed">
-          {APP_CONFIG.name} was engineered with a strict mathematical guarantee:
-          <strong className="text-cyan-300"> 100% client-side execution. Zero server uploads. Zero telemetry.</strong>
+          {APP_CONFIG.name} is designed to process supported files locally in your browser and does not intentionally upload file contents to a backend server.
+          <strong className="text-cyan-300"> Local in-browser processing. Zero server uploads. Zero telemetry.</strong>
         </p>
       </div>
 

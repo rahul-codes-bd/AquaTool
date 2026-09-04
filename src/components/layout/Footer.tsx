@@ -150,8 +150,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onClearAllData }) =>
             <button type="button" onClick={() => onNavigate('terms')} className="hover:text-slate-200 transition-colors">
               Terms
             </button>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-slate-200 transition-colors">
-              Github
+            <a href={APP_CONFIG.GITHUB_URL} target="_blank" rel="noopener noreferrer" className="hover:text-slate-200 transition-colors">
+              GitHub
             </a>
           </div>
         </div>

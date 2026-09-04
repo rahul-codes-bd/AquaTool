@@ -6,19 +6,19 @@
 const getSiteUrl = (): string => {
   const meta = import.meta as any;
   if (typeof import.meta !== 'undefined' && meta && meta.env && meta.env.VITE_SITE_URL) {
-    const envUrl = meta.env.VITE_SITE_URL.replace(/\/$/, '');
-    if (envUrl && envUrl !== 'https://aquatools.app' && !envUrl.includes('placeholder')) {
+    const envUrl = meta.env.VITE_SITE_URL.trim().replace(/\/$/, '');
+    if (envUrl && !envUrl.includes('placeholder') && !envUrl.includes('example.com')) {
       return envUrl;
     }
   }
   if (typeof process !== 'undefined' && process.env && process.env.SITE_URL) {
-    const procUrl = process.env.SITE_URL.replace(/\/$/, '');
-    if (procUrl && procUrl !== 'https://aquatools.app' && !procUrl.includes('placeholder')) {
+    const procUrl = process.env.SITE_URL.trim().replace(/\/$/, '');
+    if (procUrl && !procUrl.includes('placeholder') && !procUrl.includes('example.com')) {
       return procUrl;
     }
   }
-  // No real domain configured yet. Returns empty string to disable sitemap generation
-  // and prevent injection of fake/placeholder domains in production SEO metadata.
+  // No domain configured yet in environment. Returns empty string to avoid injecting
+  // placeholder/fake domains in production SEO metadata.
   return '';
 };
 
@@ -28,7 +28,7 @@ export const APP_CONFIG = {
   name: 'AquaTools',
   SITE_URL,
   tagline: 'Fast, private, client-side browser utilities',
-  heroSubtitle: 'Convert, compress, generate, format, and inspect your files directly in your browser. Zero cloud uploads, zero tracking, 100% private.',
+  heroSubtitle: 'Convert, compress, generate, format, and inspect your files directly in your browser. Zero cloud uploads, zero tracking, local processing.',
   version: '2.4.0',
   license: 'MIT',
   
