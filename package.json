@@ -3,13 +3,15 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "packageManager": "npm@10.9.8",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build && node scripts/validate-pwa-assets.js",
+    "build": "npx tsx scripts/generate-seo-files.ts && vite build && node scripts/validate-seo.js && node scripts/validate-pwa-assets.js",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "test": "vitest run",
+    "validate:seo": "npx tsx scripts/generate-seo-files.ts && node scripts/validate-seo.js",
     "validate:pwa": "node scripts/validate-pwa-assets.js",
     "ci": "npm run lint && npm test && npm run build"
   },

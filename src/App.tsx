@@ -14,6 +14,8 @@ import { ToolCategory, ToastMessage } from './types';
 import { PdfToolCategory } from './types/pdf';
 import { ImageToolCategory } from './types/image';
 import { APP_CONFIG } from './config/appConfig';
+import { updateSEOMetadata } from './services/seo';
+import { MASTER_CATEGORIES } from './registry/unifiedRegistry';
 import { t } from './i18n';
 
 // Route-level dynamic code splitting for sub-pages & heavy execution runners
@@ -293,6 +295,124 @@ export default function App() {
     window.addEventListener('popstate', handleHashChange);
     return () => window.removeEventListener('popstate', handleHashChange);
   }, []);
+
+  // Update document title, canonical tag, Open Graph, and Twitter metadata on view/tool change
+  useEffect(() => {
+    let title = '';
+    let description = '';
+    let canonicalPath = '/';
+
+    if (currentView === 'home') {
+      if (activeCategory !== 'all') {
+        const catObj = MASTER_CATEGORIES.find((c) => c.id === activeCategory);
+        title = catObj ? `${catObj.name} Utilities` : 'Category';
+        description = catObj?.description;
+        canonicalPath = `/#/category/${activeCategory}`;
+      } else {
+        title = 'Private, Local Browser Utilities';
+        canonicalPath = '/';
+      }
+    } else if (currentView === 'all-tools') {
+      title = 'Explore All Tools';
+      description = 'Search and discover all 180+ private, client-side tools in AquaTools.';
+      canonicalPath = '/#/all-tools';
+    } else if (currentView === 'pdf-hub') {
+      if (activePdfCategory !== 'all') {
+        const catObj = PDF_CATEGORIES.find((c) => c.id === activePdfCategory);
+        title = catObj ? `PDF ${catObj.name}` : 'PDF Category';
+        canonicalPath = `/#/pdf-category/${activePdfCategory}`;
+      } else {
+        title = 'PDF Suite & Workstation';
+        description = 'Complete browser-based PDF workstation. Merge, split, compress, edit, convert, and protect PDF files.';
+        canonicalPath = '/#/pdf-hub';
+      }
+    } else if (currentView === 'image-hub') {
+      if (activeImageCategory !== 'all') {
+        const catObj = IMAGE_CATEGORIES.find((c) => c.id === activeImageCategory);
+        title = catObj ? `Image ${catObj.name}` : 'Image Category';
+        canonicalPath = `/#/image-category/${activeImageCategory}`;
+      } else {
+        title = 'Image Studio & Workbench';
+        description = 'Client-side image processing studio. Convert, compress, resize, edit, crop, and optimize photos.';
+        canonicalPath = '/#/image-hub';
+      }
+    } else if (currentView === 'fileconv-hub') {
+      title = 'File Conversion Hub';
+      description = 'Convert images, audio, video, documents, and code formats directly inside your browser.';
+      canonicalPath = '/#/fileconv-hub';
+    } else if (currentView === 'tool' && activeToolSlug) {
+      const t = getToolBySlug(activeToolSlug);
+      if (t) {
+        title = t.name;
+        description = t.description;
+        canonicalPath = `/#/tool/${t.slug}`;
+      }
+    } else if (currentView === 'pdf-tool' && activePdfToolSlug) {
+      const t = getPdfToolBySlug(activePdfToolSlug);
+      if (t) {
+        title = t.title;
+        description = t.description;
+        canonicalPath = `/#/tool/${t.slug}`;
+      }
+    } else if (currentView === 'image-tool' && activeImageToolSlug) {
+      const t = getImageToolBySlug(activeImageToolSlug);
+      if (t) {
+        title = t.title;
+        description = t.description;
+        canonicalPath = `/#/tool/${t.slug}`;
+      }
+    } else if (currentView === 'fileconv-tool' && activeFileConvToolSlug) {
+      const t = getFileConvToolBySlug(activeFileConvToolSlug);
+      if (t) {
+        title = t.name;
+        description = t.description;
+        canonicalPath = `/#/tool/${t.slug}`;
+      }
+    } else if (currentView === 'privacy') {
+      title = 'Privacy Policy';
+      description = 'AquaTools Privacy Policy: Zero file uploads, zero telemetry, zero cookies. 100% local processing.';
+      canonicalPath = '/#/privacy';
+    } else if (currentView === 'security') {
+      title = 'Security Overview';
+      description = 'AquaTools Security Architecture: Local WebCrypto, WebAssembly sandboxing, and zero external backend dependency.';
+      canonicalPath = '/#/security';
+    } else if (currentView === 'about') {
+      title = 'About AquaTools';
+      description = 'About AquaTools: Empowering users with fast, client-side, zero-upload web utility tools.';
+      canonicalPath = '/#/about';
+    } else if (currentView === 'contact') {
+      title = 'Contact & Support';
+      description = 'Get in touch with the AquaTools team or report issues.';
+      canonicalPath = '/#/contact';
+    } else if (currentView === 'terms') {
+      title = 'Terms of Service';
+      description = 'Terms of Service and usage guidelines for AquaTools utilities.';
+      canonicalPath = '/#/terms';
+    } else if (currentView === 'settings') {
+      title = 'Settings';
+      description = 'User preferences and local storage settings.';
+      canonicalPath = '/#/settings';
+    } else if (currentView === 'favorites') {
+      title = 'Favorites';
+      description = 'Your bookmarked local tools.';
+      canonicalPath = '/#/favorites';
+    } else if (currentView === '404') {
+      title = 'Page Not Found (404)';
+      description = 'The requested page or tool does not exist on AquaTools.';
+      canonicalPath = '/#/404';
+    }
+
+    updateSEOMetadata({ title, description, canonicalPath });
+  }, [
+    currentView,
+    activeCategory,
+    activePdfCategory,
+    activeImageCategory,
+    activeToolSlug,
+    activePdfToolSlug,
+    activeImageToolSlug,
+    activeFileConvToolSlug,
+  ]);
 
   const addToast = (type: ToastMessage['type'], title: string, message?: string) => {
     const id = Date.now().toString();

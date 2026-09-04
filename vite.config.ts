@@ -78,7 +78,7 @@ export default defineConfig(() => {
           id: '/',
           name: 'AquaTools - Local File Conversion Suite',
           short_name: 'AquaTools',
-          description: '100% Client-Side Private File, Media & Document Converter Suite',
+          description: 'Client-Side Private File, Media & Document Converter Suite',
           theme_color: '#0f172a',
           background_color: '#0f172a',
           display: 'standalone',
