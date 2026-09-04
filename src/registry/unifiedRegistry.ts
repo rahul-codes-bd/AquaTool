@@ -187,7 +187,9 @@ export const getUnifiedToolsByCategory = (category: ToolCategory | 'all'): ToolD
 export const searchUnifiedTools = (query: string): ToolDefinition[] => {
   if (!query.trim()) return ALL_UNIFIED_TOOLS;
   const q = query.toLowerCase().trim();
-  return ALL_UNIFIED_TOOLS.filter(
+  
+  // Try exact match first
+  const exactMatches = ALL_UNIFIED_TOOLS.filter(
     (tool) =>
       tool.name.toLowerCase().includes(q) ||
       tool.description.toLowerCase().includes(q) ||
@@ -195,6 +197,26 @@ export const searchUnifiedTools = (query: string): ToolDefinition[] => {
       tool.supportedInputTypes.some((it) => it.toLowerCase().includes(q)) ||
       tool.supportedOutputTypes.some((ot) => ot.toLowerCase().includes(q))
   );
+  if (exactMatches.length > 0) return exactMatches;
+
+  // Split query into terms if exact match yields nothing
+  const terms = q.split(/[\s,/\-\+]+/).filter(Boolean);
+  if (terms.length <= 1) return exactMatches;
+
+  return ALL_UNIFIED_TOOLS.filter((tool) => {
+    // Return true if any term matches
+    return terms.some((term) => {
+      return (
+        tool.name.toLowerCase().includes(term) ||
+        tool.description.toLowerCase().includes(term) ||
+        tool.tags.some((tag) => tag.toLowerCase().includes(term)) ||
+        tool.supportedInputTypes.some((it) => it.toLowerCase().includes(term)) ||
+        tool.supportedOutputTypes.some((ot) => ot.toLowerCase().includes(term)) ||
+        (tool.hub && tool.hub.toLowerCase().includes(term)) ||
+        (tool.hubName && tool.hubName.toLowerCase().includes(term))
+      );
+    });
+  });
 };
 
 export const getPopularUnifiedTools = (): ToolDefinition[] => {

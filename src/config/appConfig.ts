@@ -4,8 +4,9 @@
 // 2. Set the SITE_URL environment variable during build time (e.g. SITE_URL="https://yourdomain.com")
 // 3. Or replace the empty string fallback below with your production URL.
 const getSiteUrl = (): string => {
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SITE_URL) {
-    const envUrl = import.meta.env.VITE_SITE_URL.replace(/\/$/, '');
+  const meta = import.meta as any;
+  if (typeof import.meta !== 'undefined' && meta && meta.env && meta.env.VITE_SITE_URL) {
+    const envUrl = meta.env.VITE_SITE_URL.replace(/\/$/, '');
     if (envUrl && envUrl !== 'https://aquatools.app' && !envUrl.includes('placeholder')) {
       return envUrl;
     }

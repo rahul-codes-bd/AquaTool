@@ -351,7 +351,7 @@ export default function App() {
       const t = getPdfToolBySlug(activePdfToolSlug);
       if (t) {
         title = t.title;
-        description = t.description;
+        description = t.shortDescription;
         canonicalPath = `/#/tool/${t.slug}`;
       }
     } else if (currentView === 'image-tool' && activeImageToolSlug) {
@@ -364,7 +364,7 @@ export default function App() {
     } else if (currentView === 'fileconv-tool' && activeFileConvToolSlug) {
       const t = getFileConvToolBySlug(activeFileConvToolSlug);
       if (t) {
-        title = t.name;
+        title = t.title;
         description = t.description;
         canonicalPath = `/#/tool/${t.slug}`;
       }

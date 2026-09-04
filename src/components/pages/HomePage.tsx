@@ -68,6 +68,40 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ToolCategory | 'all'>(activeCategory);
 
+  const handleTagClick = (tag: string) => {
+    if (tag === 'Image Studio') {
+      setSelectedCategory('images');
+      setSearchQuery('');
+    } else if (tag === 'PDF Suite') {
+      setSelectedCategory('documents');
+      setSearchQuery('');
+    } else if (tag === 'File Converters') {
+      setSelectedCategory('converters');
+      setSearchQuery('');
+    } else if (tag === 'Excel / CSV') {
+      setSelectedCategory('all');
+      setSearchQuery('csv');
+    } else if (tag === 'Audio / Video') {
+      setSelectedCategory('all');
+      setSearchQuery('audio');
+    } else if (tag === 'Password CSPRNG') {
+      setSelectedCategory('all');
+      setSearchQuery('password');
+    } else if (tag === 'JWT Decoder') {
+      setSelectedCategory('all');
+      setSearchQuery('jwt');
+    } else if (tag === 'EXIF Privacy') {
+      setSelectedCategory('all');
+      setSearchQuery('exif');
+    } else if (tag === 'CSS Gradients') {
+      setSelectedCategory('all');
+      setSearchQuery('gradient');
+    } else {
+      setSelectedCategory('all');
+      setSearchQuery(tag);
+    }
+  };
+
   // Sync selectedCategory whenever activeCategory prop changes
   useEffect(() => {
     setSelectedCategory(activeCategory);
@@ -261,7 +295,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               <button
                 key={tag}
                 type="button"
-                onClick={() => setSearchQuery(tag)}
+                onClick={() => handleTagClick(tag)}
                 className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-cyan-500/15 hover:text-cyan-300 hover:border-cyan-500/30 text-slate-300 border border-white/10 text-[11px] transition-all active:scale-95"
               >
                 {tag}
