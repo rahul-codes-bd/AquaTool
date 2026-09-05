@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-  SITEMAP GENERATION PENDING SITE_URL CONFIGURATION.
-  To generate a full production sitemap, configure VITE_SITE_URL or SITE_URL in your deployment environment or .env file.
--->
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-</urlset>
